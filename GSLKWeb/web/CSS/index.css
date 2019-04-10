@@ -177,10 +177,10 @@ a, p, h1, h2, h3, ul, li{
 .btn-fecharTela:active{
     color: black;
 }
-.visivel, .visivell, .cont-visivel{
+.visivel, .visivell, .cont-visivel, .user-visivel{
     display: inline-block;
 }
-.cont-inVisivel{
+.cont-inVisivel, .user-inVisivel{
     display: none;
 }
 .contato {

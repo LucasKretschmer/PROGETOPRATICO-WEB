@@ -102,6 +102,14 @@ function serializeForm(idForm, classCampos) {
     return '&' + arrParams.join('&');
 }
 
+function fazerDeslogin() {
+    document.querySelectorAll("#header_btnEntrar")[0].classList.remove("user-inVisivel");
+    document.querySelectorAll("#header_btnEntrar")[1].classList.remove("user-inVisivel");
+    document.querySelectorAll("#btn_usuario_conta")[0].value = '';
+    document.querySelectorAll("#btn_usuario_conta")[1].value = '';
+
+}
+
 function fazerLogin() {
     var email = document.querySelector("#email").value;
     var senha = document.querySelector("#senha").value;
@@ -113,13 +121,18 @@ function fazerLogin() {
         var jData = data;
 
         if (jData.STATUS === true) {
+            var arrNome = jData.NOME.split(" ");
+            var nomeUser = arrNome[0] + " " + (arrNome[arrNome.length - 1]).split("")[0];
+            var email = document.querySelector("#email").value;
+            var senha = document.querySelector("#senha").value;
             document.querySelector("#email").value = "";
             document.querySelector("#senha").value = "";
             document.querySelector("#btnFechaTelaLoguin").click();
-            document.querySelector("#nome-cliente").value = '<i class="fas fa-user-circle"></i> ' + jData.NOME;
-            document.querySelector("#cod-cliente").value = jData.CCLIFOR;
-
-
+            document.querySelectorAll("#btn_usuario_conta")[0].value = '<i class="fas fa-user"></i> ' + nomeUser;
+            document.querySelectorAll("#btn_usuario_conta")[1].value = '<i class="fas fa-user"></i> ' + nomeUser;
+            document.querySelectorAll("#header_btnEntrar")[0].classList.add("user-inVisivel");
+            document.querySelectorAll("#header_btnEntrar")[1].classList.add("user-inVisivel");
+            logar(jData.CCLIFOR, nomeUser, email, senha);
         }
 
 

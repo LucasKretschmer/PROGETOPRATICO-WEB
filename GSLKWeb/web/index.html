@@ -27,10 +27,10 @@
                     </div>
                     <div class="btnCadastroValue">
                         <p>Crie uma conta!</p>
-                        <input type="text" placeholder="Nome completo" required="required" maxlength="100">
-                        <input type="email" placeholder="Email de Login" required="required">
-                        <input type="password" placeholder="Senha" required="required">
-                        <input type="password" placeholder="Confirmação da senha" required="required">
+                        <input type="text" id="cadastrar-nome" placeholder="Nome completo" required="required" maxlength="100">
+                        <input type="email" id="cadastrar-email" placeholder="Email de Login" required="required">
+                        <input type="password" id="cadastrar-senha" placeholder="Senha" required="required">
+                        <input type="password" id="cadastrar-confsenha" placeholder="Confirmação da senha" required="required">
                         <div class="btnEntrar" id="btnCadastrar">Entrar</div>
                         <span>Login com Google+?</span>
                     </div>
@@ -46,7 +46,8 @@
                     <ul class="header-mid-menu-ul-fixo">
                         <li class="header-mid-menu-li header-mid-menu-li-fixo" id="header_btnHome"><span><i class="fas fa-home"></i></span>Home</li>
                         <li class="header-mid-menu-li header-mid-menu-li-fixo" id="header_btnContato"><span><i class="fas fa-phone-square"></i></span>Contato</li>
-                        <li class="header-mid-menu-li header-mid-menu-li-fixo" id="header_btnEntrar"><span><i class="fas fa-sign-in-alt"></i></span>Entrar</li>
+                        <li class="header-mid-menu-li user-inVisivel" id="header_btnEntrar"><span><i class="fas fa-sign-in-alt"></i></span>Entrar</li>
+                        <li class="header-mid-menu-li user-visivell" id="btn_usuario_conta"></li>
                     </ul>
                 </nav>
             </div>
@@ -56,13 +57,12 @@
                     <a href="https://www.facebook.com/" class="header-top-esc" target="_blank"><span><i class="fab fa-facebook-square"></i></span>Facebook</a>
                     <a href="https://twitter.com/login?lang=pt" class="header-top-esc" target="_blank"><span><i class="fab fa-twitter-square"></i></span>Twitter</a>
                     <a href="https://www.instagram.com/?hl=pt-br" class="header-top-esc" target="_blank"><span><i class="fab fa-instagram"></i></span>Instagram</a>
-                    <h3 id="nome-cliente" class="nome-cliente"></h3>
-                    <h3 id="cod-cliente" style="display: none;"></h3>
                     <nav class="hedaer-mid-nav">
                         <ul class="header-mid-menu-ul">
                             <li class="header-mid-menu-li" id="header_btnHome"><span><i class="fas fa-home"></i></span>Home</li>
                             <li class="header-mid-menu-li" id="header_btnContato"><span><i class="fas fa-phone-square"></i></span>Contato</li>
-                            <li class="header-mid-menu-li" id="header_btnEntrar"><span><i class="fas fa-sign-in-alt"></i></span>Entrar</li>
+                            <li class="header-mid-menu-li user-visivel" id="header_btnEntrar"><span><i class="fas fa-sign-in-alt"></i></span>Entrar</li>
+                            <li class="header-mid-menu-li user-inVisivel" id="btn_usuario_conta"></li>
                         </ul>
                     </nav>
                 </div>
@@ -164,5 +164,6 @@
             <p class="copright">₢2019 - Todos os direitos reservados | Balneário Campo Novo</p>
         </footer>
         <script src="JS/index.js" type="text/javascript"></script>
+        <script src="JS/cookies.js" type="text/javascript"></script>
     </body>
 </html>
