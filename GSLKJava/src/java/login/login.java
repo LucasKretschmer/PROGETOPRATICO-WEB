@@ -124,8 +124,39 @@ public class login {
         }
     }
 
-    public String teste(VariavelSessao vs) {
+    public String logado(VariavelSessao vs) throws ExcecaoTecnicon {
+        Funcoes.validaVSNNNome(vs, new String[]{
+            "COD", "Codigo do Usuário"
+        });
 
-        return vs.getParameter("EMAIL") + " " + vs.getParameter("SENHA");
+        boolean status = false;
+        int cclifor = Funcoes.strToInt(vs.getParameter("COD"));
+        JSONObject jsDados = new JSONObject();
+        TClientDataSet cdsDados = TClientDataSet.create("GSACESSO");
+        cdsDados.createDataSet();
+        cdsDados.condicao("WHERE CCLIFOR = " + vs.getParameter("COD"));
+        cdsDados.open();
+
+        if (!cdsDados.isEmpty()) {
+            cdsDados.close();
+
+            TClientDataSet cdsDadosc = TClientDataSet.create(vs, "GSCLIFOR");
+            cdsDados.createDataSet();
+            cdsDados.condicao(new StringBuilder("WHERE CCLIFOR = '").append(cclifor).append("'").toString());
+            cdsDados.open();
+
+            if (cdsDados.fieldByName("ATIVO").asString().trim().equals("N")) {
+                jsDados.put("STATUS", status);
+                jsDados.put("MSG", "Esse usuário foi desabilitado! Contate um administrador para desbloquea-lo...");
+            } else {
+                jsDados.put("ATIVO", cdsDados.fieldByName("ATIVO"));
+                jsDados.put("NOME", cdsDados.fieldByName("NOME"));
+                jsDados.put("CCLIFOR", cdsDados.fieldByName("CCLIFOR"));
+
+                status = true;
+                jsDados.put("STATUS", status);
+            }
+        }
+        return jsDados.toString();
     }
 }
