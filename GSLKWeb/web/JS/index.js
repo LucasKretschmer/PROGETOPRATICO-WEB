@@ -1,5 +1,6 @@
 // SCRIPT-GERAL //
 function init() {
+
     document.querySelector('.h1Entrar').addEventListener('click', getTela);
     document.querySelector('.h1Cadastrese').addEventListener('click', getTela);
     document.querySelector('#btnFechaTelaLoguin').addEventListener('click', fecharTela);
@@ -11,6 +12,10 @@ function init() {
     document.querySelectorAll("#header_btnContato")[1].addEventListener('click', irContato);
     document.querySelector("#btnEntrar").addEventListener('click', fazerLogin);
     document.querySelector("#btnCadastrar").addEventListener('click', fazerCadastro);
+
+    if (verificaLogado()) {
+
+    }
 
     setInterval(function () {
         document.querySelector(".next").click();
@@ -107,7 +112,8 @@ function fazerDeslogin() {
     document.querySelectorAll("#header_btnEntrar")[1].classList.remove("user-inVisivel");
     document.querySelectorAll("#btn_usuario_conta")[0].value = '';
     document.querySelectorAll("#btn_usuario_conta")[1].value = '';
-
+    document.querySelectorAll("#btn_usuario_conta")[0].classList.add("user-inVisivel");
+    document.querySelectorAll("#btn_usuario_conta")[1].classList.add("user-inVisivel");
 }
 
 function fazerLogin() {
@@ -120,7 +126,7 @@ function fazerLogin() {
         alert(data);
         var jData = data;
 
-        if (jData.STATUS === true) {
+        if (jData.STATUS) {
             var arrNome = jData.NOME.split(" ");
             var nomeUser = arrNome[0] + " " + (arrNome[arrNome.length - 1]).split("")[0];
             var email = document.querySelector("#email").value;

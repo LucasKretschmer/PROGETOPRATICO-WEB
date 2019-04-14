@@ -1,15 +1,12 @@
-function logar(cuser, nuser, email, senha) {
-    window.coduser = cuser;
-    window.nomeuser = nuser;
-    setCookie("cod", window.coduser, 3600);
-    setCookie("user", window.nomeuser, 3600);
+function logar(cuser, nuser, email) {
+    setCookie("cod", cuser, 3600);
+    setCookie("user", nuser, 3600);
     setCookie("email", email, 3600);
-    setCookie("password", senha, 3600);
 }
 
 function atualizarCookie() {
-    var arrValues = ["cod", "user", "email", "password"];
-    for (var i = 0; i < 4; i++) {
+    var arrValues = ["cod", "user", "email"];
+    for (var i = 0; i < 3; i++) {
         var valorCookie = getCookie(arrValues[i]);
         setCookie(arrValues[i], valorCookie, 3600);
     }
@@ -19,11 +16,24 @@ function deslogar() {
     removeCookie("cod");
     removeCookie("user");
     removeCookie("email");
-    removeCookie("password");
 }
 
 function removeCookie(name) {
     setCookie(name, '', 0);
+}
+
+function verificaLogado() {
+    var arrValues = ["cod", "user", "email"];
+    var valuesReq = [];
+    for (var i = 0; i < 3; i++) {
+        var valorCookie = getCookie(arrValues[i]);
+        if (valorCookie !== "" && valorCookie !== null) {
+            valuesReq[i] = valorCookie;
+        } else {
+            return false;
+        }
+    }
+    return true;
 }
 
 function getCookie(nome) {
