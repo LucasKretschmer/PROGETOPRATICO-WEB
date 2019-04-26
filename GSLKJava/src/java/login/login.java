@@ -1,9 +1,11 @@
 package login;
 
 import br.com.tecnicon.server.dataset.TClientDataSet;
+import br.com.tecnicon.server.execoes.ExcecaoMsg;
 import br.com.tecnicon.server.execoes.ExcecaoTecnicon;
 import br.com.tecnicon.server.sessao.VariavelSessao;
 import br.com.tecnicon.server.util.funcoes.Funcoes;
+import java.util.Date;
 import javax.ejb.Stateless;
 import org.json.JSONObject;
 
@@ -23,8 +25,6 @@ public class login {
 
         boolean status = false;
         int cclifor;
-        String email;
-        String senha;
         JSONObject jsDados = new JSONObject();
 
         TClientDataSet cdsLogin = TClientDataSet.create(vs, "GSACESSO");
@@ -34,8 +34,6 @@ public class login {
         cdsLogin.first();
 
         if (!cdsLogin.isEmpty()) {
-            email = cdsLogin.fieldByName("EMAIL").asString();
-            senha = cdsLogin.fieldByName("SENHA").asString();
             cclifor = cdsLogin.fieldByName("CCLIFOR").asInteger();
             cdsLogin.close();
 
@@ -74,57 +72,62 @@ public class login {
             "CONFSENHA", "Confirmação da Senha"
         });
 
-        boolean status = false;
-        int cclifor;
-        String nome;
-        String email;
+        if (vs.getParameter("SENHA").equals(vs.getParameter("CONFSENHA"))) {
+            int cclifor;
+            JSONObject objeto = new JSONObject();
 
-        TClientDataSet cdsCadastro = TClientDataSet.create("GSCLIFOR");
-        cdsCadastro.createDataSet();
-        cdsCadastro.condicao("WHERE EMAIL = '" + vs.getParameter("EMAIL").trim() + "'");
-        cdsCadastro.open();
-        cdsCadastro.first();
+            TClientDataSet cdsCadastro = TClientDataSet.create("GSACESSO");
+            cdsCadastro.createDataSet();
+            cdsCadastro.condicao("WHERE EMAIL = '" + vs.getParameter("EMAIL") + "' ");
+            cdsCadastro.open();
 
-        if (!cdsCadastro.isEmpty()) {
-            JSONObject retErro = new JSONObject();
-            retErro.put("STATUS", status);
-            retErro.put("MSG", "Esse nome e email já estão vinculados a uma conta! Faça login ou caso você tenha perdido a senha entre em contato com o administrador!");
-            return retErro.toString();
-        } else {
-            nome = cdsCadastro.fieldByName("NOME").asString();
-            email = cdsCadastro.fieldByName("EMAIL").asString();
-
-            if (vs.getParameter("SENHA").equals(vs.getParameter("CONFSENHA"))) {
-                cdsCadastro.insert();
-
-                cdsCadastro.fieldByName("NOME").asString(vs.getParameter("NOME"));
-                cdsCadastro.fieldByName("FANTASIA").asString(vs.getParameter("NOME"));
-                cdsCadastro.fieldByName("CFILIAL").asInteger(1);
-                cdsCadastro.fieldByName("TIPO").asString("C");
-                cdsCadastro.post();
-                cclifor = cdsCadastro.fieldByName("CCLIFOR").asInteger();
+            if (!cdsCadastro.isEmpty()) {
+                throw new ExcecaoMsg(vs, "O email já está cadastrado em uma conta!");
+            } else {
                 cdsCadastro.close();
-                TClientDataSet cdsCadastro2 = TClientDataSet.create("GSACESSO");
+                TClientDataSet cdsCadastro2 = TClientDataSet.create(vs, "GSCLIFOR");
                 cdsCadastro2.createDataSet();
                 cdsCadastro2.insert();
 
-                cdsCadastro2.fieldByName("CCLIFOR").asInteger(cclifor);
-                cdsCadastro2.fieldByName("EMAIL").asString(vs.getParameter("EMAIL"));
-                cdsCadastro2.fieldByName("SENHA").asString(vs.getParameter("SENHA"));
-                cdsCadastro2.fieldByName("CONFSENHA").asString(vs.getParameter("CONFSENHA"));
+                cdsCadastro2.fieldByName("NOME").asString(vs.getParameter("NOME"));
+                cdsCadastro2.fieldByName("FANTASIA").asString(vs.getParameter("NOME"));
+                cdsCadastro2.fieldByName("DTCADASTRO").asDate(new Date());
+                cdsCadastro2.fieldByName("DTALT").asDate(new Date());
+                cdsCadastro2.fieldByName("TIPO").asString("C");
+                cdsCadastro2.fieldByName("ATIVO").asString("S");
+                cdsCadastro2.fieldByName("CFILIAL").asInteger(1);
+                cdsCadastro2.fieldByName("MALA").asString("W");
+
                 cdsCadastro2.post();
 
-                return fazerLogin(vs);
-            } else {
-                JSONObject retErro = new JSONObject();
-                retErro.put("STATUS", status);
-                retErro.put("MSG", "As senhas digitadas não conferem, digite novamente!!!");
-                return retErro.toString();
+                cclifor = cdsCadastro2.fieldByName("CCLIFOR").asInteger();
+
+                cdsCadastro = TClientDataSet.create(vs, "GSACESSO");
+                cdsCadastro.createDataSet();
+                cdsCadastro.insert();
+
+                cdsCadastro.fieldByName("CCLIFOR").asInteger(cclifor);
+                cdsCadastro.fieldByName("EMAIL").asString(vs.getParameter("EMAIL"));
+                cdsCadastro.fieldByName("SENHA").asString(vs.getParameter("SENHA"));
+                cdsCadastro.fieldByName("CONFSENHA").asString(vs.getParameter("CONFSENHA"));
+                cdsCadastro.post();
+
+                objeto.put("NOME", vs.getParameter("NOME"));
+                objeto.put("COD", cclifor);
+                objeto.put("EMAIL", vs.getParameter("EMAIL"));
+                objeto.put("STATUS", true);
+
+                return objeto.toString();
             }
+        } else {
+            if (true) {
+                throw new ExcecaoMsg(vs, "asdasdasdsadsa");
+            }
+            throw new ExcecaoMsg(vs, "As senhas devem ser iguais, por favor digite novamente!");
         }
     }
 
-    public String logado(VariavelSessao vs) throws ExcecaoTecnicon {
+    public String verificaLogado(VariavelSessao vs) throws ExcecaoTecnicon {
         Funcoes.validaVSNNNome(vs, new String[]{
             "COD", "Codigo do Usuário"
         });
@@ -132,15 +135,16 @@ public class login {
         boolean status = false;
         int cclifor = Funcoes.strToInt(vs.getParameter("COD"));
         JSONObject jsDados = new JSONObject();
+
         TClientDataSet cdsDados = TClientDataSet.create("GSACESSO");
         cdsDados.createDataSet();
-        cdsDados.condicao("WHERE CCLIFOR = " + vs.getParameter("COD"));
+        cdsDados.condicao("WHERE CCLIFOR = " + cclifor);
         cdsDados.open();
 
         if (!cdsDados.isEmpty()) {
             cdsDados.close();
 
-            TClientDataSet cdsDadosc = TClientDataSet.create(vs, "GSCLIFOR");
+            cdsDados = TClientDataSet.create(vs, "GSCLIFOR");
             cdsDados.createDataSet();
             cdsDados.condicao(new StringBuilder("WHERE CCLIFOR = '").append(cclifor).append("'").toString());
             cdsDados.open();
@@ -156,6 +160,8 @@ public class login {
                 status = true;
                 jsDados.put("STATUS", status);
             }
+        } else {
+            jsDados.put("STATUS", status);
         }
         return jsDados.toString();
     }

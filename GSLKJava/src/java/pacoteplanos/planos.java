@@ -47,5 +47,4 @@ public class planos {
 
         return jsData.toString();
     }
-
 }
