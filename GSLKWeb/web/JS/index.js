@@ -10,12 +10,38 @@ function init() {
     document.querySelectorAll("#header_btnHome")[1].addEventListener('click', irHome);
     document.querySelectorAll("#header_btnContato")[0].addEventListener('click', irContato);
     document.querySelectorAll("#header_btnContato")[1].addEventListener('click', irContato);
+    document.querySelectorAll("#btn_usuario_conta_conta")[0].addEventListener('click', irConta);
+    document.querySelectorAll("#btn_usuario_conta_conta")[1].addEventListener('click', irConta);
+    document.querySelectorAll("#header_btnContato")[0].addEventListener('click', irContato);
+    document.querySelectorAll("#header_btnContato")[1].addEventListener('click', irContato);
     document.querySelector("#btnEntrar").addEventListener('click', fazerLogin);
     document.querySelector("#btnCadastrar").addEventListener('click', fazerCadastro);
+    document.querySelectorAll("#btn_usuario_conta_sair")[0].addEventListener('click', fazerDeslogin);
+    document.querySelectorAll("#btn_usuario_conta_sair")[1].addEventListener('click', fazerDeslogin);
 
     if (verificaLogado()) {
-
+        var cod = getCookie("cod");
+        if (cod !== "") {
+            // projeto, classe, metodo, funcaoOK, funcaoErro, parametros
+            executaServico("GSLKJava", "login", "verificaLogado", function (data) {
+                if (data.STATUS) {
+                    var jData = data;
+                    var arrNome = jData.NOME.split(" ");
+                    var nomeUser = arrNome[0] + " " + (arrNome[arrNome.length - 1]).split("")[0];
+                    document.querySelectorAll("#btn_usuario_conta")[0].classList.remove("user-inVisivel");
+                    document.querySelectorAll("#btn_usuario_conta")[1].classList.remove("user-inVisivel");
+                    document.querySelectorAll("#btn_usuario_conta_nome")[0].innerHTML = '<i class="fas fa-user"></i> ' + nomeUser;
+                    document.querySelectorAll("#btn_usuario_conta_nome")[1].innerHTML = '<i class="fas fa-user"></i> ' + nomeUser;
+                    document.querySelectorAll("#header_btnEntrar")[0].classList.add("user-inVisivel");
+                    document.querySelectorAll("#header_btnEntrar")[1].classList.add("user-inVisivel");
+                    logar(jData.CCLIFOR, nomeUser);
+                }
+            }, function (erro) {
+                alert(erro);
+            }, "&COD=" + cod + "&");
+        }
     }
+
 
     setInterval(function () {
         document.querySelector(".next").click();
@@ -23,17 +49,16 @@ function init() {
     //projeto, classe, metodo, funcaoOK, funcaoErro, parametros
     executaServico("GSLKJava", "planos", "retornarPlanos",
             function (data) {
-                if (data[0].STATUS === "TRUE") {
+                if (data[0].STATUS) {
                     montaProdutos(data);
                 } else {
                     alert("Não existem itens cadastrados para serem listados :)");
                 }
             }, function (erro) {
         alert("Vish não consegui fazer a requisição, alguem chama um programador por favor? Aconteceu o erro:" + erro);
-
     }, "");
-
 }
+
 
 function montaProdutos(data) {
     for (var l = 1; l < data.length; l++) {
@@ -110,10 +135,12 @@ function serializeForm(idForm, classCampos) {
 function fazerDeslogin() {
     document.querySelectorAll("#header_btnEntrar")[0].classList.remove("user-inVisivel");
     document.querySelectorAll("#header_btnEntrar")[1].classList.remove("user-inVisivel");
-    document.querySelectorAll("#btn_usuario_conta")[0].value = '';
-    document.querySelectorAll("#btn_usuario_conta")[1].value = '';
+    document.querySelectorAll("#btn_usuario_conta_nome")[0].innerHTML = '';
+    document.querySelectorAll("#btn_usuario_conta_nome")[1].innerHTML = '';
     document.querySelectorAll("#btn_usuario_conta")[0].classList.add("user-inVisivel");
     document.querySelectorAll("#btn_usuario_conta")[1].classList.add("user-inVisivel");
+    deslogar();
+    document.querySelector("#header_btnHome").click();
 }
 
 function fazerLogin() {
@@ -123,7 +150,6 @@ function fazerLogin() {
     var param = "&EMAIL=" + email + "&SENHA=" + senha;
     // projeto, classe, metodo, funcaoOK, funcaoErro, parametros
     executaServico("GSLKJava", "login", "fazerLogin", function (data) {
-        alert(data);
         var jData = data;
 
         if (jData.STATUS) {
@@ -134,29 +160,58 @@ function fazerLogin() {
             document.querySelector("#email").value = "";
             document.querySelector("#senha").value = "";
             document.querySelector("#btnFechaTelaLoguin").click();
-            document.querySelectorAll("#btn_usuario_conta")[0].value = '<i class="fas fa-user"></i> ' + nomeUser;
-            document.querySelectorAll("#btn_usuario_conta")[1].value = '<i class="fas fa-user"></i> ' + nomeUser;
+            document.querySelectorAll("#btn_usuario_conta_nome")[0].innerHTML = '<i class="fas fa-user"></i> ' + nomeUser;
+            document.querySelectorAll("#btn_usuario_conta_nome")[1].innerHTML = '<i class="fas fa-user"></i> ' + nomeUser;
+            document.querySelectorAll("#btn_usuario_conta")[0].classList.remove("user-inVisivel");
+            document.querySelectorAll("#btn_usuario_conta")[1].classList.remove("user-inVisivel");
             document.querySelectorAll("#header_btnEntrar")[0].classList.add("user-inVisivel");
             document.querySelectorAll("#header_btnEntrar")[1].classList.add("user-inVisivel");
-            logar(jData.CCLIFOR, nomeUser, email, senha);
+            logar(jData.CCLIFOR, nomeUser, email);
         }
-
-
     }, function (erro) {
         alert(erro);
     }, param);
 }
 
 function fazerCadastro() {
-    document.querySelector("");
-    document.querySelector("");
-    document.querySelector("");
-    document.querySelector("");
+    var nome = document.querySelector("#cadastrar-nome").value;
+    var email = document.querySelector("#cadastrar-email").value;
+    var senha = document.querySelector("#cadastrar-senha").value;
+    var confSenha = document.querySelector("#cadastrar-confsenha").value;
+
+    var parametro = "&NOME=" + nome + "&EMAIL=" + email + "&SENHA=" + senha + "&CONFSENHA=" + confSenha;
+    // projeto, classe, metodo, funcaoOK, funcaoErro, parametros
+    executaServico("GSLKJava", "login", "fazerCadastro", function (data) {
+        var jData = data;
+        if (jData.STATUS) {
+            var arrNome = jData.NOME.split(" ");
+            var nomeUser = arrNome[0] + " " + (arrNome[arrNome.length - 1]).split("")[0];
+            var email = jData.EMAIL;
+            document.querySelector("#cadastrar-nome").value = "";
+            document.querySelector("#cadastrar-email").value = "";
+            document.querySelector("#cadastrar-senha").value = "";
+            document.querySelector("#cadastrar-confsenha").value = "";
+            document.querySelector("#btnFechaTelaLoguin").click();
+            document.querySelectorAll("#btn_usuario_conta_nome")[0].innerHTML = '<i class="fas fa-user"></i> ' + nomeUser;
+            document.querySelectorAll("#btn_usuario_conta_nome")[1].innerHTML = '<i class="fas fa-user"></i> ' + nomeUser;
+            document.querySelectorAll("#btn_usuario_conta")[0].classList.remove("user-inVisivel");
+            document.querySelectorAll("#btn_usuario_conta")[1].classList.remove("user-inVisivel");
+            document.querySelectorAll("#header_btnEntrar")[0].classList.add("user-inVisivel");
+            document.querySelectorAll("#header_btnEntrar")[1].classList.add("user-inVisivel");
+            logar(jData.CCLIFOR, nomeUser, email);
+        } else {
+            alert(data);
+        }
+    }, function (erro) {
+        alert(erro);
+    }, parametro);
 }
 
 function irHome(e) {
     document.querySelector(".contato").classList.remove("cont-visivel");
     document.querySelector(".contato").classList.add("cont-inVisivel");
+    document.querySelector(".minhaConta").classList.remove("cont-visivel");
+    document.querySelector(".minhaConta").classList.add("cont-inVisivel");
 
     for (var i = 0; i < document.querySelectorAll(".index").length; i++) {
         document.querySelectorAll(".index")[i].classList.remove("cont-inVisivel");
@@ -167,11 +222,24 @@ function irHome(e) {
 function irContato(e) {
     document.querySelector(".contato").classList.remove("cont-inVisivel");
     document.querySelector(".contato").classList.add("cont-visivel");
+    document.querySelector(".minhaConta").classList.remove("cont-visivel");
+    document.querySelector(".minhaConta").classList.add("cont-inVisivel");
 
     for (var i = 0; i < document.querySelectorAll(".index").length; i++) {
         document.querySelectorAll(".index")[i].classList.add("cont-inVisivel");
         document.querySelectorAll(".index")[i].classList.remove("cont-visivel");
     }
+}
+
+function irConta(e) {
+    document.querySelectorAll(".index")[0].classList.remove("cont-visivel");
+    document.querySelectorAll(".index")[0].classList.add("cont-inVisivel");
+    document.querySelectorAll(".index")[1].classList.remove("cont-visivel");
+    document.querySelectorAll(".index")[1].classList.add("cont-inVisivel");
+    document.querySelector(".contato").classList.remove("cont-visivel");
+    document.querySelector(".contato").classList.add("cont-inVisivel");
+    document.querySelector(".minhaConta").classList.add("cont-visivel");
+    document.querySelector(".minhaConta").classList.remove("cont-inVisivel");
 }
 
 function getTela(e) {

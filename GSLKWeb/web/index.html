@@ -8,6 +8,7 @@
         <link href="https://fonts.googleapis.com/css?family=PT+Sans+Caption" rel="stylesheet">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous"/>
         <link href="CSS/index.css" rel="stylesheet" type="text/css"/>
+        <script src="JS/cookies.js" type="text/javascript"></script>
     </head>
     <body class="" id="tbody">
         <div id="divEntrar" class="tampaBack">
@@ -23,7 +24,7 @@
                         <input id="email" type="email" maxlength="100" required="required" placeholder="Email">
                         <input id="senha" type="password" required="required" placeholder="Senha">
                         <div class="btnEntrar" id="btnEntrar">Entrar</div>
-                        <span>ou ainda, entre com o Google+</span>
+                        <!--<span>ou ainda, entre com o Google+</span>-->
                     </div>
                     <div class="btnCadastroValue">
                         <p>Crie uma conta!</p>
@@ -32,7 +33,7 @@
                         <input type="password" id="cadastrar-senha" placeholder="Senha" required="required">
                         <input type="password" id="cadastrar-confsenha" placeholder="Confirmação da senha" required="required">
                         <div class="btnEntrar" id="btnCadastrar">Entrar</div>
-                        <span>Login com Google+?</span>
+                        <!--<span>Login com Google+?</span>-->
                     </div>
                 </div>
             </form>
@@ -47,7 +48,13 @@
                         <li class="header-mid-menu-li header-mid-menu-li-fixo" id="header_btnHome"><span><i class="fas fa-home"></i></span>Home</li>
                         <li class="header-mid-menu-li header-mid-menu-li-fixo" id="header_btnContato"><span><i class="fas fa-phone-square"></i></span>Contato</li>
                         <li class="header-mid-menu-li " id="header_btnEntrar"><span><i class="fas fa-sign-in-alt"></i></span>Entrar</li>
-                        <li class="header-mid-menu-li user-inVisivel" id="btn_usuario_conta"></li>
+                        <li class="header-mid-menu-li-usuario user-inVisivel" id="btn_usuario_conta">
+                            <ul>
+                                <li class="usuario-conta" id="btn_usuario_conta_nome"></li><br>
+                                <li class="usuario-conta" id="btn_usuario_conta_conta">Minha conta</li><br>
+                                <li class="usuario-conta" id="btn_usuario_conta_sair">Sair</li>
+                            </ul>
+                        </li>
                     </ul>
                 </nav>
             </div>
@@ -62,7 +69,13 @@
                             <li class="header-mid-menu-li" id="header_btnHome"><span><i class="fas fa-home"></i></span>Home</li>
                             <li class="header-mid-menu-li" id="header_btnContato"><span><i class="fas fa-phone-square"></i></span>Contato</li>
                             <li class="header-mid-menu-li user-visivel" id="header_btnEntrar"><span><i class="fas fa-sign-in-alt"></i></span>Entrar</li>
-                            <li class="header-mid-menu-li user-inVisivel" id="btn_usuario_conta"></li>
+                            <li class="header-mid-menu-li-usuario user-inVisivel" id="btn_usuario_conta">
+                                <ul>
+                                    <li class="usuario-conta" id="btn_usuario_conta_nome"></li><br>
+                                    <li class="usuario-conta" id="btn_usuario_conta_conta">Minha conta</li><br>
+                                    <li class="usuario-conta" id="btn_usuario_conta_sair">Sair</li>
+                                </ul>
+                            </li>
                         </ul>
                     </nav>
                 </div>
@@ -73,17 +86,22 @@
                 <div class="slideshow-container">
                     <div class="mySlides fade">
                         <img src="img/05169g-acampar-problemas-comohacerpara-com-900x480.jpg" alt=""/>
-                        <div class="text">Acampamento</div>
                     </div>
 
                     <div class="mySlides fade">
                         <img src="img/394849_451447661587903_1870767620_n_00104047_1.jpg" alt=""/>
-                        <div class="text">Piscina</div>
                     </div>
 
                     <div class="mySlides fade">
                         <img src="img/5a79ed7b562448fd0be255588480c7b0d2150fc10fb63.jpg" alt=""/>
-                        <div class="text">Lago</div>
+                    </div>
+
+                    <div class="mySlides fade">
+                        <img src="img/foto1.jpg" alt=""/>
+                    </div>
+
+                    <div class="mySlides fade">
+                        <img src="img/foto2.jpg" alt=""/>
                     </div>
 
                     <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
@@ -94,6 +112,8 @@
                     <span class="dot" onclick="currentSlide(1)"></span>
                     <span class="dot" onclick="currentSlide(2)"></span>
                     <span class="dot" onclick="currentSlide(3)"></span>
+                    <span class="dot" onclick="currentSlide(4)"></span>
+                    <span class="dot" onclick="currentSlide(5)"></span>
                 </div>
             </div>
         </div>
@@ -137,14 +157,64 @@
             </div>
 
             <div class="contato cont-inVisivel">
-                <fieldset class="form-fieldset">
-                    <h1>Contate-nos</h1>
-                    <input type="text" id="contato-nome" class="contato-nome" placeholder="Nome" name="nome"><br>
-                    <input type="number" id="contato-idade" class="contato-idade" placeholder="Idade" name="idade"><br>
-                    <input type="email" id="contato-email" class="contato-email" placeholder="Email" name="email"><br>
-                    <textarea name="comentário" rows="10" placeholder="Escreva seu comentario aqui..." cols="40"></textarea>
-                    <input type="button" id="contato-btnenviar" class="contato-botao" value="Enviar">
-                </fieldset>
+                <div class="centralizaNaDiv">
+                    <fieldset class="form-fieldset">
+                        <h1>Contate-nos</h1>
+                        <input type="text" id="contato-nome" class="contato-nome" placeholder="Nome" name="nome"><br>
+                        <input type="number" id="contato-idade" class="contato-idade" placeholder="Idade" name="idade"><br>
+                        <input type="email" id="contato-email" class="contato-email" placeholder="Email" name="email"><br>
+                        <textarea name="comentário" rows="10" placeholder="Escreva seu comentario aqui..." cols="40"></textarea>
+                        <input type="button" id="contato-btnenviar" class="contato-botao" value="Enviar">
+                    </fieldset>
+                </div>
+            </div>
+
+            <div class="minhaConta cont-inVisivel">
+                <div class="listaOpcoes">
+                    <ul>
+                        <li class="listaOpcoes-li" id="listaOpcoes_fatura">Faturas</li>
+                        <li class="listaOpcoes-li" id="listaOpcoes_config">Configurações</li>
+                    </ul>
+                </div>
+
+                <div class="opcoes_faturas">
+                    <table>
+                        <tr>
+                            <th>Cód. Fatura</th>
+                            <th>Vencimento</th>
+                            <th>Valor(R$)</th>
+                            <th>Data Gerado</th>
+                            <th>Data Pagamento</th>
+                            <th>Status</th>
+                            <th>Descrição</th>
+                        </tr>
+                        <tr>
+                            <td>123</td>
+                            <td>15/05/2019</td>
+                            <td>R$445,89</td>
+                            <td>05/04/2019</td>
+                            <td>15/05/2019</td>
+                            <td>Pago</td>
+                            <td>Mensalidade do plano Familia Plus</td>
+                        </tr>
+                        <tr>
+                            <td>232</td>
+                            <td>15/07/2019</td>
+                            <td>R$100,00</td>
+                            <td>05/08/2019</td>
+                            <td>15/08/2019</td>
+                            <td>Pendente</td>
+                            <td>Contribuição da obra do pedalinho para o parque.</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="opcoes_config">
+
+
+
+                </div>
+
             </div>
         </main>
         <footer>
@@ -164,6 +234,5 @@
             <p class="copright">₢2019 - Todos os direitos reservados | Balneário Campo Novo</p>
         </footer>
         <script src="JS/index.js" type="text/javascript"></script>
-        <script src="JS/cookies.js" type="text/javascript"></script>
     </body>
 </html>

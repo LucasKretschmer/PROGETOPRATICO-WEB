@@ -11,6 +11,9 @@ function atualizarCookie() {
         setCookie(arrValues[i], valorCookie, 3600);
     }
 }
+function setCookie(nome, value, expira) {
+    document.cookie = encodeURIComponent(nome) + "=" + encodeURIComponent(value) + "; expires=" + expira + "; path=";
+}
 
 function deslogar() {
     removeCookie("cod");
@@ -25,10 +28,10 @@ function removeCookie(name) {
 function verificaLogado() {
     var arrValues = ["cod", "user", "email"];
     var valuesReq = [];
-    for (var i = 0; i < 3; i++) {
-        var valorCookie = getCookie(arrValues[i]);
-        if (valorCookie !== "" && valorCookie !== null) {
-            valuesReq[i] = valorCookie;
+    for (var x = 0; x < 3; x++) {
+        var valorCookie = getCookie(arrValues[x]);
+        if (valorCookie !== false) {
+            valuesReq[x] = valorCookie;
         } else {
             return false;
         }
@@ -37,16 +40,10 @@ function verificaLogado() {
 }
 
 function getCookie(nome) {
-    var cookie = document.cookie.split()(";");
+    var cookie = document.cookie.split(";");
     for (var i = 0; i < cookie.length; i++) {
         if (cookie[i].trim().split("=")[0] === nome) {
             return cookie[i].trim().split("=")[1];
-        } else {
-            return "false";
         }
     }
-}
-
-function setCookie(nome, value, expira) {
-    document.cookie = encodeURIComponent(nome) + "=" + encodeURIComponent(value) + "; expires=" + expira + "; path=";
 }
