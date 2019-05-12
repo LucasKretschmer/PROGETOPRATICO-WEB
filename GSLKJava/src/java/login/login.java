@@ -17,7 +17,7 @@ import org.json.JSONObject;
 public class login {
 
     public String fazerLogin(VariavelSessao vs) throws ExcecaoTecnicon {
-        Funcoes.validaVSNome(vs, new String[]{
+        Funcoes.validaVSNNNome(vs, new String[]{
             "EMAIL", "Email de login"
         }, new String[]{
             "SENHA", "Senha"
