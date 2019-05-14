@@ -78,11 +78,11 @@ function contrataPlano(e) {
         executaServico("GSLKJava", "contrataPlano", "contrataPlano",
                 function (data) {
                     if (data[0].STATUS) {
-
+                        preencheDadosCliente(cclifor);
 
 
                     } else {
-                        alert("Você tem informações não preenchidas para poder fazer a sua assinatura!");
+                        alert("Você tem informações não preenchidas para poder fazer a sua assinatura! \r\n Verifique nas configurações as informações que estão faltando...", "Atenção!");
                     }
                 }, function (erro) {
             alert("Vish não consegui fazer a requisição, alguem chama um programador por favor? \r\nErro:" + erro);
@@ -278,7 +278,6 @@ function preencheDadosCliente(cod) {
             document.querySelector("#nomePagamento").value = jData.NOMEPAGAMENTO;
             document.querySelector("#qtdedias").value = jData.QTDEDIAS;
             document.querySelector("#qtdePessoas").value = jData.QTDEDIAS;
-
         }
 
     }, function (erro) {

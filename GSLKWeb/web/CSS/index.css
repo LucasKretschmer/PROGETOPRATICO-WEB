@@ -776,7 +776,7 @@ th {
     padding: 3px 2px 2px 10px;
 }
 .cclifor{
-    width: 7%;
+    width: 9%;
 }
 .nome{
     width: 35%;
@@ -806,7 +806,7 @@ th {
     width: 14%;
 }
 .cclifor1{
-    width: 75%;
+    width: 89%;
 }
 .nome1{
     width: 95%;
@@ -913,7 +913,15 @@ th {
 .pendente{
     color: red;
 }
+.contrataPlano-tituloPlano{
 
+}
+.contrataPlano-descPlano{
+
+}
+.contrataPlano-paga{
+
+}
 
 /*         MANTER ISSO AQUI ABAIXO DE TUDO                  */
 .visivel, .visivell, .cont-visivel, .user-visivel{
