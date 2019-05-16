@@ -44,6 +44,8 @@ function getCookie(nome) {
     for (var i = 0; i < cookie.length; i++) {
         if (cookie[i].trim().split("=")[0] === nome) {
             return cookie[i].trim().split("=")[1];
+        } else {
+            return false;
         }
     }
 }

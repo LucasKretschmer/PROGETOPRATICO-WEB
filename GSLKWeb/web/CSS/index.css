@@ -163,13 +163,30 @@ a, p, h1, h2, h3, ul, li{
 .selected{
     text-decoration: underline;
 }
-.btn-fecharTela{
+.btn-fecharTela-plano{
     float: right;
-    color: cornflowerblue;
     font-size: 1.3em;
     position: absolute;
-    top: 3em;
-    right: 1em;
+    top: 2em;
+    right: 2em;
+    height: 22px;
+    overflow: hidden;
+}
+.btn-fecharTela-plano:hover{
+    color: red;
+}
+.btn-fecharTela-plano:active{
+    color: black;
+}
+.btn-fecharTela{
+    float: right;
+    font-size: 1.3em;
+    position: absolute;
+    top: 3.5em;
+    right: 1.2em;
+    height: 22px;
+    color: cadetblue;
+    overflow: hidden;
 }
 .btn-fecharTela:hover{
     color: red;
@@ -874,7 +891,9 @@ th {
 }
 .titulo-opcoes{
     width: 100%;
-    margin: 6px 0px 8px 10px;
+    margin: 6px 0px 12px 0px;
+    text-align: center;
+    font-size: 1.8em;
 }
 .opcoes_config div{
     display: inline-block;
@@ -913,17 +932,87 @@ th {
 .pendente{
     color: red;
 }
-.contrataPlano-tituloPlano{
-
-}
-.contrataPlano-descPlano{
-
-}
+.contrataPlano-tituloPlano{width: 100%;text-align: center;font-size: 1.4em;}
+.contrataPlano-descPlano{text-align: justify;}
 .contrataPlano-paga{
 
 }
+.tampaBackPromocao{
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 999999;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+.contrataPlano{align-items: center;width: 50%;margin: 4em auto 0 auto;padding: 4em;background-color: lightslategrey;color: white;box-shadow: 1px 1px 6px 0px ghostwhite;position: relative;}
+.cursorPointer{
+    cursor: pointer;
+}
+.btn-salvar-plano{
+    font-size: 1.2rem;
+    width: 19%;
+    border-radius: 2px;
+    border: none;
+    margin: 37px auto 0 auto;
+    box-shadow: 1px 1px 3px rgba(8,81,120,0.25);
+    box-sizing: border-box;
+    background-color: cadetblue;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.btn-salvar-plano:hover{
+    background-color: gold;
+    cursor: pointer;
+    color: black;
+}
+.btn-salvar-plano span{
+    display: inline-block;
+    margin: 3px;
+    height: 32px;
+}
 
-/*         MANTER ISSO AQUI ABAIXO DE TUDO                  */
+
+.exemplo2 input[type=radio], .exemplo2 input[type=checkbox]{
+    display:none; /* Esconde os inputs */
+}
+.exemplo2 label {
+    cursor: pointer;
+}
+.exemplo2 input[type="radio"] + label:before, .exemplo2 input[type="checkbox"] + label:before {
+    border: 1px solid #5D5C5C;
+    content: "\00a0";
+    display: inline-block;
+    font: 16px/1em sans-serif;
+    height: 16px;
+    margin: 0 .25em 0 0;
+    padding:0;
+    vertical-align: top;
+    width: 16px;
+    border-radius:4px;
+}
+.exemplo2 input[type="radio"]:checked + label:before, .exemplo2 input[type="checkbox"]:checked + label:before {
+    background: #A0A0A0;
+    color: #FFF;
+    content: "\2713";
+    text-align: center;
+}
+.exemplo2 input[type="radio"]:checked + label:after, .exemplo2 input[type="checkbox"]:checked + label:after {
+    font-weight: bold;
+}
+.btnfechatela:hover{
+    background-color: red;
+    cursor: pointer;
+    color: white;
+}
+.btnfechatela:active{
+    color: black;
+}
+
+
+/*MANTER ISSO AQUI ABAIXO DE TUDO*/
 .visivel, .visivell, .cont-visivel, .user-visivel{
     display: inline-block;
 }

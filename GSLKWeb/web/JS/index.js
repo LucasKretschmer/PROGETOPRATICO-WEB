@@ -1,6 +1,5 @@
 // SCRIPT-GERAL //
 function init() {
-
     document.querySelector('.h1Entrar').addEventListener('click', getTela);
     document.querySelector('.h1Cadastrese').addEventListener('click', getTela);
     document.querySelector('#btnFechaTelaLoguin').addEventListener('click', fecharTela);
@@ -22,12 +21,15 @@ function init() {
     document.querySelector("#btn_editar_senha_opcoes").addEventListener('click', editarSenhaOpcoes);
     document.querySelector("#btn_salvar_senha_opcoes").addEventListener('click', salvarSenhaOpcoes);
     document.querySelector("#btnCadastrar").addEventListener('click', fazerCadastro);
+    document.querySelector("#btnfechatela").addEventListener('click', fechaTelaSelectPlano);
+    document.querySelector(".btn-salvar-plano span").addEventListener('click', contrataPlano);
     document.querySelectorAll("#btn_usuario_conta_sair")[0].addEventListener('click', fazerDeslogin);
     document.querySelectorAll("#btn_usuario_conta_sair")[1].addEventListener('click', fazerDeslogin);
+
     if (verificaLogado()) {
         var cod = getCookie("cod");
         if (cod !== "") {
-// projeto, classe, metodo, funcaoOK, funcaoErro, parametros
+            // projeto, classe, metodo, funcaoOK, funcaoErro, parametros
             executaServico("GSLKJava", "login", "verificaLogado", function (data) {
                 if (data.STATUS) {
                     var jData = data;
@@ -41,13 +43,9 @@ function init() {
                     document.querySelectorAll("#header_btnEntrar")[1].classList.add("user-inVisivel");
                     logar(jData.CCLIFOR, nomeUser);
                 }
-            }, function (erro) {
-                alert(erro);
-            }, "&COD=" + cod + "&");
+            }, "", "&COD=" + cod + "&");
         }
-
     }
-
 
     setInterval(function () {
         document.querySelector(".next").click();
@@ -56,13 +54,11 @@ function init() {
     executaServico("GSLKJava", "planos", "retornarPlanos",
             function (data) {
                 if (data[0].STATUS) {
-                    montaProdutos(data);
+                    montaPlanos(data);
                     var quantPlanos = document.querySelectorAll("#main-planos-button").length;
                     for (var k = 0; k < quantPlanos; k++) {
                         document.querySelectorAll("#main-planos-button")[k].addEventListener('click', contrataPlano);
                     }
-                } else {
-                    alert("Não existem itens cadastrados para serem listados :)");
                 }
             }, function (erro) {
         alert("Vish não consegui fazer a requisição, alguem chama um programador por favor? Aconteceu o erro:" + erro);
@@ -72,15 +68,16 @@ function init() {
 function contrataPlano(e) {
     var codPromocao = e.target.classList.toString().split("_")[1];
     var cclifor = getCookie("cod");
+
     if (cclifor !== "" || cclifor !== null) {
+        document.querySelector(".tampaBackPromocao").classList.add("cont-inVisivel");
+
         var parametros = "&CODUSER=" + cclifor + "&CODPROMOCAO=" + codPromocao + "&";
         //projeto, classe, metodo, funcaoOK, funcaoErro, parametros
         executaServico("GSLKJava", "contrataPlano", "contrataPlano",
                 function (data) {
                     if (data[0].STATUS) {
                         preencheDadosCliente(cclifor);
-
-
                     } else {
                         alert("Você tem informações não preenchidas para poder fazer a sua assinatura! \r\n Verifique nas configurações as informações que estão faltando...", "Atenção!");
                     }
@@ -88,7 +85,7 @@ function contrataPlano(e) {
             alert("Vish não consegui fazer a requisição, alguem chama um programador por favor? \r\nErro:" + erro);
         }, parametros);
     } else {
-        document.querySelector("#").click();
+        document.querySelector("#header_btnEntrar").click();
         alert("Você deve fazer o loguin antes de contratar um plano!");
     }
 }
@@ -124,6 +121,20 @@ function editarOpcoes() {
     document.querySelector("#telefone").removeAttribute("disabled");
     document.querySelector("#celular").removeAttribute("disabled");
     document.querySelector("#cpf").removeAttribute("disabled");
+
+    var parametros = "&NOME=" + nome + "&EMAIL=" + emaill + "&CEP=" + cep + "&ENDERECO=" + endereco + "&BAIRRO=" + bairro
+            + "&CIDADE=" + cidade + "&TELEFONE=" + telefone + "&CELULAR=" + celular + "&CPF=" + cpf;
+    //projeto, classe, metodo, funcaoOK, funcaoErro, parametros
+    executaServico("GSLKJava", "contrataPlano", "contrataPlano",
+            function (data) {
+                if (data[0].STATUS) {
+                    alert("Registro inserido com sucesso!", "Sucesso");
+                } else {
+                    alert("Algo deu errado!", "Atenção!");
+                }
+            }, function (erro) {
+        alert("Vish não consegui salvar, alguem chama um programador por favor?\r\nErro:" + erro, "Atenção!");
+    }, parametros);
 }
 function editarSenhaOpcoes() {
     document.querySelector("#emaill").removeAttribute("disabled");
@@ -145,7 +156,7 @@ function mudaAbaOpcoesConf() {
     document.querySelector("#opcoes_config").classList.remove("cont-inVisivel");
 }
 
-function montaProdutos(data) {
+function montaPlanos(data) {
     for (var l = 1; l < data.length; l++) {
         var linhas = '<hr style="border-color: darkseagreen;">'
                 + '<div class="main-planos-container">'
@@ -164,7 +175,48 @@ function montaProdutos(data) {
                 + '    <div class="plano_' + data[l].COD + '" id="main-planos-button"><span>Assine já</span></div>'
                 + '</div>';
         document.querySelector("#main-planos").innerHTML += linhas;
+        document.querySelector(".plano_" + data[l].COD).addEventListener("click", apresentaPlano);
     }
+}
+
+function apresentaPlano(e) {
+    var codPlan = e.target.classList.toString().split("_")[1];
+    var pagamentos =
+            '  <div class="contrataPlano-paga exemplo2">'
+            + '    <input type="radio" class="cursorPointer" id="p_1" name="tipo" value="mensal">'
+            + '    <label for="p_1" class="cursorPointer"> Mensal </label>'
+            + '</div>';
+
+    document.querySelector(".divTiposPagamento").innerHTML += "";
+
+    document.querySelector("tampaBackPromocao").classList.remove("cont-inVisivel");
+
+//<!--<div class="tampaBackPromocao cont-inVisivel">
+    //   <div class="contrataPlano">
+    //       <h2 class="titulo-opcoes">Opções do Plano</h2>
+    //       <h3>Tipos de Pagamento:</h3>
+//
+    //       <div class="contrataPlano-paga exemplo2">
+    //           <input type="radio" class="cursorPointer" id="p_2" name="tipo" value="anual">
+    //           <label for="p_2" class="cursorPointer"> Anual </label>
+    //       </div>
+    //       <div class="contrataPlano-paga exemplo2">
+    ///           <input type="radio" class="cursorPointer" id="p_3" name="tipo" value="trimestral">
+    //          <label for="p_3" class="cursorPointer"> Trimestral </label>
+    //      </div>
+    //      <h3 class="titulo-opcoes">Plano selecionado:</h3>
+    //      <p class="contrataPlano-tituloPlano">Para a Familia</p>
+    ///      <p class="contrataPlano-descPlano">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque et arcu et lectus pretium posuere efficitur quis arcu.
+    //           Mauris quis libero nec elit tincidunt tempus et quis purus. Orci varius natoque penatibus et magnis dis parturient montes,
+    //          nascetur ridiculus mus. Sed tempus, dui ac egestas tincidunt, velit magna iaculis nunc, et varius dolor nunc at purus.
+    //          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce a vestibulum justo. Sed porttitor viverra sem, ultricies
+    //          hendrerit urna efficitur et. Ut quis posuere purus, facilisis fermentum justo.
+    //      </p>
+    //      <div class="btn-salvar-plano" id="btn_salvar_plano"><span>Assinar</span></div>
+    //      <div class="btn-fecharTela-plano" id="btnfechatela"><i class="fas fa-window-close btnfechatela"></i></div>
+    //  </div>
+//</div>-->
+
 }
 
 window.onscroll = function () {
@@ -247,7 +299,9 @@ function fazerLogin() {
             document.querySelectorAll("#header_btnEntrar")[0].classList.add("user-inVisivel");
             document.querySelectorAll("#header_btnEntrar")[1].classList.add("user-inVisivel");
             logar(jData.CCLIFOR, nomeUser, email);
-//            preencheDadosCliente(jData.CCLIFOR);
+            preencheDadosCliente(jData.CCLIFOR);
+        } else {
+            alert(jData.MSG, "Atenção!");
         }
     }, function (erro) {
         alert(erro);
@@ -271,15 +325,17 @@ function preencheDadosCliente(cod) {
             document.querySelector("#telefone").value = jData.FONE;
             document.querySelector("#celular").value = jData.CELULAR;
             document.querySelector("#cpf").value = jData.CPF;
-            document.querySelector("#ccontrato").value = jData.CCONTRATO;
-            document.querySelector("#dataContrato").value = jData.DATACONTRATO;
-            document.querySelector("#valor").value = jData.VALOR;
-            document.querySelector("#nomePlano").value = jData.NOMEPLANO;
-            document.querySelector("#nomePagamento").value = jData.NOMEPAGAMENTO;
-            document.querySelector("#qtdedias").value = jData.QTDEDIAS;
-            document.querySelector("#qtdePessoas").value = jData.QTDEDIAS;
-        }
 
+            if (jData.PLANO) {
+                document.querySelector("#ccontrato").value = jData.CCONTRATO;
+                document.querySelector("#dataContrato").value = jData.DATACONTRATO;
+                document.querySelector("#valor").value = jData.VALOR;
+                document.querySelector("#nomePlano").value = jData.NOMEPLANO;
+                document.querySelector("#nomePagamento").value = jData.NOMEPAGAMENTO;
+                document.querySelector("#qtdedias").value = jData.QTDEDIAS;
+                document.querySelector("#qtdePessoas").value = jData.QTDEDIAS;
+            }
+        }
     }, function (erro) {
         alert(erro);
     }, "&COD=" + cod + "&");
@@ -399,4 +455,9 @@ function showSlides(n) {
     slides[slideIndex - 1].style.display = "block";
     dots[slideIndex - 1].className += " active";
 }
+
+function fechaTelaSelectPlano() {
+    document.querySelector(".tampaBackPromocao").classList.add("cont-inVisivel");
+}
+
 init();
