@@ -63,7 +63,9 @@ public class contrataPlano {
 
             return jData.put("MSG", "Contrato foi inserido com sucesso!\r\n Confira seu email com as informações do plano contratado...").toString();
         } else {
-            return jData.put("STATUS", false).toString();
+            jData.put("STATUS", false);
+            jData.put("MSG", "Tem algumas informações inconsistentes em seu cadastro, \r\nverifique as configurações e tente novamente!");
+            return jData.toString();
         }
 
     }

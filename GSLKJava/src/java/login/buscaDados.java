@@ -48,22 +48,6 @@ public class buscaDados {
         jData.put("EMAIL", cdsAcesso.fieldByName("EMAIL").asString());
 
         if (!cdsCliforend.isEmpty()) {
-            TSQLDataSetEmp cteContrato = TSQLDataSetEmp.create(vs);
-            cteContrato.createDataSet();
-            cteContrato.commandText(new StringBuilder()
-                    .append(" SELECT GSCONTRATO.CCONTRATO,")
-                    .append("        GSCONTRATO.DATA,")
-                    .append("        GSCONTRATO.VALOR,")
-                    .append("        GSPLANO.NOME AS NOMEPLANO,")
-                    .append("        GSPAGAMENTO.NOME AS NOMEPAGAMENTO,")
-                    .append("        GSPAGAMENTO.QTDEDIAS ")
-                    .append(" FROM GSCONTRATO ")
-                    .append(" INNER JOIN GSPLANO ON (GSPLANO.CPLANO = GSCONTRATO.CPLANO)")
-                    .append(" INNER JOIN GSPAGAMENTO ON (GSPAGAMENTO.CPLANO = GSCONTRATO.CPAGAMENTO)")
-                    .append(" WHERE GSCONTRATO.CCLIFOREND = ").append(cdsCliforend.fieldByName("CCLIFOREND"))
-                    .toString());
-            cteContrato.open();
-
             jData.put("AVANCADO", true);
             jData.put("ENDERECO", cdsCliforend.fieldByName("ENDERECO").asString());
             jData.put("BAIRRO", cdsCliforend.fieldByName("BAIRRO").asString());
@@ -71,12 +55,34 @@ public class buscaDados {
             jData.put("CIDADE", cdsCliforend.fieldByName("CIDADE").asString());
             jData.put("FONE", cdsCliforend.fieldByName("FONE").asInteger());
             jData.put("CELULAR", cdsCliforend.fieldByName("CELULAR").asInteger());
-            jData.put("CCONTRATO", cteContrato.fieldByName("CCONTRATO").asInteger());
-            jData.put("DATACONTRATO", cteContrato.fieldByName("DATA").asString());
-            jData.put("VALOR", cteContrato.fieldByName("VALOR").asDouble());
-            jData.put("NOMEPLANO", cteContrato.fieldByName("NOMEPLANO").asString());
-            jData.put("NOMEPAGAMENTO", cteContrato.fieldByName("NOMEPAGAMENTO").asString());
-            jData.put("QTDEDIAS", cteContrato.fieldByName("QTDEDIAS").asInteger());
+            TSQLDataSetEmp cteContrato = TSQLDataSetEmp.create(vs);
+
+            cteContrato.createDataSet();
+            cteContrato.commandText(new StringBuilder()
+                    .append(" SELECT GSCONTRATO.CCONTRATO,")
+                    .append("        GSCONTRATO.DATA,")
+                    .append("        GSCONTRATO.VALOR,")
+                    .append("        GSPLANO.NOME AS NOMEPLANO,")
+                    .append("        GSPAGAMENTO.NOME AS NOMEPAGAMENTO,")
+                    .append("        GSPAGAMENTO.QTDEDIAS,")
+                    .append("        GSPLANO.QTDEPESSOAS")
+                    .append(" FROM GSCONTRATO ")
+                    .append(" INNER JOIN GSPLANO ON (GSPLANO.CPLANO = GSCONTRATO.CPLANO)")
+                    .append(" INNER JOIN GSPAGAMENTO ON (GSPAGAMENTO.CPLANO = GSCONTRATO.CPAGAMENTO)")
+                    .append(" WHERE GSCONTRATO.CCLIFOREND = ").append(cdsCliforend.fieldByName("CCLIFOREND"))
+                    .toString());
+            cteContrato.open();
+
+            if (!cteContrato.isEmpty()) {
+                jData.put("PLANO", true);
+                jData.put("CCONTRATO", cteContrato.fieldByName("CCONTRATO").asInteger());
+                jData.put("DATACONTRATO", cteContrato.fieldByName("DATA").asString());
+                jData.put("VALOR", cteContrato.fieldByName("VALOR").asDouble());
+                jData.put("NOMEPLANO", cteContrato.fieldByName("NOMEPLANO").asString());
+                jData.put("NOMEPAGAMENTO", cteContrato.fieldByName("NOMEPAGAMENTO").asString());
+                jData.put("QTDEDIAS", cteContrato.fieldByName("QTDEDIAS").asInteger());
+                jData.put("QTDEPESSOAS", cteContrato.fieldByName("QTDEPESSOAS").asInteger());
+            }
 
             return jData.toString();
         }
