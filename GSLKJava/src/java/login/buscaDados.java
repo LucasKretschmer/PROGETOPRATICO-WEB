@@ -90,4 +90,39 @@ public class buscaDados {
         jData.put("AVANCADO", false);
         return jData.toString();
     }
+
+    public String buscaTiposPagameno(VariavelSessao vs) throws ExcecaoTecnicon {
+        JSONObject jasao = new JSONObject();
+
+        TClientDataSet cdsPaga = TClientDataSet.create(vs, "GSPAGAMENTO");
+        cdsPaga.createDataSet();
+        cdsPaga.open();
+
+        while (!cdsPaga.eof()) {
+            jasao.put("CPAGAMENTO", cdsPaga.fieldByName("CAGAMENTO").asInteger());
+            jasao.put("NOME", cdsPaga.fieldByName("NOME").asString());
+        }
+        return jasao.toString();
+    }
+
+    public String buscaPromocao(VariavelSessao vs) throws ExcecaoTecnicon {
+        JSONObject jsObj = new JSONObject();
+        TClientDataSet cdsData = TClientDataSet.create(vs, "GSPLANO");
+        cdsData.createDataSet();
+        cdsData.condicao("WHERE CPLANO = " + vs.getParameter("CODPLANO"));
+        cdsData.open();
+        cdsData.first();
+
+        if (!cdsData.isEmpty()) {
+            jsObj.put("STATUS", true);
+            if (cdsData.fieldByName("ATIVO").asString().equals("S")) {
+                jsObj.put("COD", cdsData.fieldByName("CPLANO").asInteger());
+                jsObj.put("NOME", cdsData.fieldByName("NOME").asString());
+                jsObj.put("DESC", cdsData.fieldByName("DESCRICAO").asString());
+                jsObj.put("QTDEPESSU", cdsData.fieldByName("QTDEPESSOAS").asInteger());
+                jsObj.put("VALOR", cdsData.fieldByName("VALORMES").asDouble());
+            }
+        }
+        return jsObj.toString();
+    }
 }
