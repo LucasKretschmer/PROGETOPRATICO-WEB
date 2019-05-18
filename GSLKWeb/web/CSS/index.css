@@ -77,18 +77,16 @@ a, p, h1, h2, h3, ul, li{
     text-decoration: underline;
 }
 .tampaBack{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0px;
-    left: 0px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background-color: rgba(0,0,0,.7);
-    z-index: 1000;
+    z-index: 9999999;
     display: none;
 }
-.tampaBackBody{
-    position: fixed;
-}
+.tampaBackBody{}
 .entrarStyle{
     width: 30%;
     min-height: 44%;
@@ -937,6 +935,7 @@ th {
 .contrataPlano-paga{
 
 }
+.contrataPlano-valor{display: inline-block;position: absolute;right: 7%;bottom: 10%;font-weight: bold;font-size: 1.3em;}
 .tampaBackPromocao{
     position: fixed;
     top: 0;
@@ -946,7 +945,7 @@ th {
     z-index: 999999;
     background-color: rgba(0, 0, 0, 0.7);
 }
-.contrataPlano{align-items: center;width: 50%;margin: 4em auto 0 auto;padding: 4em;background-color: lightslategrey;color: white;box-shadow: 1px 1px 6px 0px ghostwhite;position: relative;}
+.contrataPlano{align-items: center;width: 50%;margin: 2em auto 0 auto;padding: 2em;background-color: lightslategrey;color: white;box-shadow: 1px 1px 6px 0px ghostwhite;position: relative;}
 .cursorPointer{
     cursor: pointer;
 }
@@ -955,7 +954,7 @@ th {
     width: 19%;
     border-radius: 2px;
     border: none;
-    margin: 37px auto 0 auto;
+    margin: 6% 0% 2% 6%;
     box-shadow: 1px 1px 3px rgba(8,81,120,0.25);
     box-sizing: border-box;
     background-color: cadetblue;
@@ -1009,6 +1008,10 @@ th {
 }
 .btnfechatela:active{
     color: black;
+}
+.divTiposPagamento{
+    overflow: auto;
+    max-height: 4em;
 }
 
 

@@ -22,7 +22,7 @@ function init() {
     document.querySelector("#btn_salvar_senha_opcoes").addEventListener('click', salvarSenhaOpcoes);
     document.querySelector("#btnCadastrar").addEventListener('click', fazerCadastro);
     document.querySelector("#btnfechatela").addEventListener('click', fechaTelaSelectPlano);
-    document.querySelector(".btn-salvar-plano span").addEventListener('click', contrataPlano);
+    document.querySelector(".btn-salvar-plano").addEventListener('click', contrataPlano);
     document.querySelectorAll("#btn_usuario_conta_sair")[0].addEventListener('click', fazerDeslogin);
     document.querySelectorAll("#btn_usuario_conta_sair")[1].addEventListener('click', fazerDeslogin);
 
@@ -66,18 +66,17 @@ function init() {
 }
 
 function contrataPlano(e) {
-    var codPromocao = e.target.classList.toString().split("_")[1];
+    var codPromocao = document.querySelector(".contrataPlano-valor").id;
     var cclifor = getCookie("cod");
 
     if (cclifor !== "" || cclifor !== null) {
-        document.querySelector(".tampaBackPromocao").classList.add("cont-inVisivel");
-
         var parametros = "&CODUSER=" + cclifor + "&CODPROMOCAO=" + codPromocao + "&";
         //projeto, classe, metodo, funcaoOK, funcaoErro, parametros
         executaServico("GSLKJava", "contrataPlano", "contrataPlano",
                 function (data) {
                     if (data[0].STATUS) {
                         preencheDadosCliente(cclifor);
+                        document.querySelector(".tampaBackPromocao").classList.add("cont-inVisivel");
                     } else {
                         alert("Você tem informações não preenchidas para poder fazer a sua assinatura! \r\n Verifique nas configurações as informações que estão faltando...", "Atenção!");
                     }
@@ -168,9 +167,9 @@ function montaPlanos(data) {
                 + '        </div>'
                 + '    </div>'
                 + '    <div class="main-planos-mid">'
-                + '        <h1>' + data[l].NOME + '</h1>'
-                + '        <p>' + data[l].DESC + '</p><br>'
-                + '        <p>Quantidade de pessoas que o plano comporta: ' + data[l].QTDEPESSU + '</p>'
+                + '        <h1 class="main-planos-mid-h1">' + data[l].NOME + '</h1>'
+                + '        <p class="main-planos-mid-p1">' + data[l].DESC + '</p><br>'
+                + '        <p class="main-planos-mid-p2">Quantidade de pessoas que o plano comporta: ' + data[l].QTDEPESSU + '</p>'
                 + '    </div>'
                 + '    <div class="plano_' + data[l].COD + '" id="main-planos-button"><span>Assine já</span></div>'
                 + '</div>';
@@ -181,42 +180,38 @@ function montaPlanos(data) {
 
 function apresentaPlano(e) {
     var codPlan = e.target.classList.toString().split("_")[1];
-    var pagamentos =
-            '  <div class="contrataPlano-paga exemplo2">'
-            + '    <input type="radio" class="cursorPointer" id="p_1" name="tipo" value="mensal">'
-            + '    <label for="p_1" class="cursorPointer"> Mensal </label>'
-            + '</div>';
 
-    document.querySelector(".divTiposPagamento").innerHTML += "";
+    //projeto, classe, metodo, funcaoOK, funcaoErro, parametros
+    executaServico("GSLKJava", "buscaDados", "buscaTiposPagameno",
+            function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var paga = data.PAGAMENTO;
+                    i++;
+                    var nome = data.NOME;
+                    var pagamentos =
+                            '  <div class="contrataPlano-paga exemplo2">'
+                            + '    <input type="radio" class="cursorPointer" id="p_' + paga + '" name="tipo" value="' + nome + '">'
+                            + '    <label for="p_' + paga + '" class="cursorPointer"> ' + nome + '</label>'
+                            + '</div>';
+                    document.querySelector(".divTiposPagamento").innerHTML += pagamentos;
+                }
+                document.querySelector("#tampaBackPromocao").classList.remove("cont-inVisivel");
+            }, function (erro) {
+        alert("Vish, algo de errado não está certo! Alguém chama um programador por favor?\r\nErro:" + erro, "Atenção!");
+    }, "");
 
-    document.querySelector("tampaBackPromocao").classList.remove("cont-inVisivel");
-
-//<!--<div class="tampaBackPromocao cont-inVisivel">
-    //   <div class="contrataPlano">
-    //       <h2 class="titulo-opcoes">Opções do Plano</h2>
-    //       <h3>Tipos de Pagamento:</h3>
-//
-    //       <div class="contrataPlano-paga exemplo2">
-    //           <input type="radio" class="cursorPointer" id="p_2" name="tipo" value="anual">
-    //           <label for="p_2" class="cursorPointer"> Anual </label>
-    //       </div>
-    //       <div class="contrataPlano-paga exemplo2">
-    ///           <input type="radio" class="cursorPointer" id="p_3" name="tipo" value="trimestral">
-    //          <label for="p_3" class="cursorPointer"> Trimestral </label>
-    //      </div>
-    //      <h3 class="titulo-opcoes">Plano selecionado:</h3>
-    //      <p class="contrataPlano-tituloPlano">Para a Familia</p>
-    ///      <p class="contrataPlano-descPlano">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque et arcu et lectus pretium posuere efficitur quis arcu.
-    //           Mauris quis libero nec elit tincidunt tempus et quis purus. Orci varius natoque penatibus et magnis dis parturient montes,
-    //          nascetur ridiculus mus. Sed tempus, dui ac egestas tincidunt, velit magna iaculis nunc, et varius dolor nunc at purus.
-    //          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce a vestibulum justo. Sed porttitor viverra sem, ultricies
-    //          hendrerit urna efficitur et. Ut quis posuere purus, facilisis fermentum justo.
-    //      </p>
-    //      <div class="btn-salvar-plano" id="btn_salvar_plano"><span>Assinar</span></div>
-    //      <div class="btn-fecharTela-plano" id="btnfechatela"><i class="fas fa-window-close btnfechatela"></i></div>
-    //  </div>
-//</div>-->
-
+    //projeto, classe, metodo, funcaoOK, funcaoErro, parametros
+    executaServico("GSLKJava", "buscaDados", "buscaPromocao",
+            function (data) {
+                document.querySelector(".contrataPlano-tituloPlano").innerHTML = data.NOME;
+                document.querySelector(".contrataPlano-descPlano").innerHTML = data.DESC
+                        + '<p class="main-planos-mid-p2">Quantidade de pessoas que o plano comporta: ' + data.QTDEPESSU + '</p>';
+                document.querySelector(".tampaBackPromocao").classList.remove("cont-inVisivel");
+                document.querySelector(".contrataPlano-valor").innerHTML = "Valor do plano: R$" + data.VALOR;
+                document.querySelector(".contrataPlano-valor").id = data.COD;
+            }, function (erro) {
+        alert("Vish, algo de errado não está certo! Alguém chama um programador por favor?\r\nErro:" + erro, "Atenção!");
+    }, "&CODPLANO=" + codPlan + "&");
 }
 
 window.onscroll = function () {
@@ -226,6 +221,7 @@ window.onscroll = function () {
         document.querySelector(".header-mid-fixo").classList.remove("header-mid-fixo-visivel");
     }
 };
+
 function executaServico(projeto, classe, metodo, funcaoOK, funcaoErro, parametros) {
     var http = new XMLHttpRequest();
     http.open('POST', 'http://portal.tecnicon.com.br:7078/TecniconPCHttp/ConexaoHttp?p=evento=ERPMetodos|sessao=|empresa=|filial=|local=|parametro=' +
