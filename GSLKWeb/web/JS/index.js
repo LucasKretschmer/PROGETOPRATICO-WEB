@@ -7,6 +7,9 @@ function init() {
     document.querySelectorAll('#header_btnEntrar')[1].addEventListener('click', abrirTela);
     document.querySelectorAll("#header_btnHome")[0].addEventListener('click', irHome);
     document.querySelectorAll("#header_btnHome")[1].addEventListener('click', irHome);
+    document.querySelector(".header-mid-logo").addEventListener('click', irHome);
+    document.querySelectorAll("#btn_usuario_conta_nome")[0].addEventListener('click', irHome);
+    document.querySelectorAll("#btn_usuario_conta_nome")[1].addEventListener('click', irHome);
     document.querySelectorAll("#header_btnContato")[0].addEventListener('click', irContato);
     document.querySelectorAll("#header_btnContato")[1].addEventListener('click', irContato);
     document.querySelectorAll("#btn_usuario_conta_conta")[0].addEventListener('click', irConta);
@@ -22,13 +25,14 @@ function init() {
     document.querySelector("#btn_salvar_senha_opcoes").addEventListener('click', salvarSenhaOpcoes);
     document.querySelector("#btnCadastrar").addEventListener('click', fazerCadastro);
     document.querySelector("#btnfechatela").addEventListener('click', fechaTelaSelectPlano);
-    document.querySelector(".btn-salvar-plano").addEventListener('click', contrataPlano);
+    document.querySelector("#contato-btnenviar").addEventListener('click', contatoFeedback);
+    document.querySelector("#btn_salvar_plano").addEventListener('click', contrataPlano);
     document.querySelectorAll("#btn_usuario_conta_sair")[0].addEventListener('click', fazerDeslogin);
     document.querySelectorAll("#btn_usuario_conta_sair")[1].addEventListener('click', fazerDeslogin);
 
     if (verificaLogado()) {
         var cod = getCookie("cod");
-        if (cod !== "") {
+        if (cod !== false) {
             // projeto, classe, metodo, funcaoOK, funcaoErro, parametros
             executaServico("GSLKJava", "login", "verificaLogado", function (data) {
                 if (data.STATUS) {
@@ -42,51 +46,118 @@ function init() {
                     document.querySelectorAll("#header_btnEntrar")[0].classList.add("user-inVisivel");
                     document.querySelectorAll("#header_btnEntrar")[1].classList.add("user-inVisivel");
                     logar(jData.CCLIFOR, nomeUser);
+                    preencheDadosCliente(cod);
                 }
-            }, "", "&COD=" + cod + "&");
+            }, function (erro) {
+                alert(erro);
+            }, "&COD=" + cod + "&");
         }
     }
 
     setInterval(function () {
         document.querySelector(".next").click();
     }, 3500);
-    //projeto, classe, metodo, funcaoOK, funcaoErro, parametros
+
     executaServico("GSLKJava", "planos", "retornarPlanos",
             function (data) {
                 if (data[0].STATUS) {
                     montaPlanos(data);
                     var quantPlanos = document.querySelectorAll("#main-planos-button").length;
                     for (var k = 0; k < quantPlanos; k++) {
-                        document.querySelectorAll("#main-planos-button")[k].addEventListener('click', contrataPlano);
+                        document.querySelectorAll("#main-planos-button")[k].addEventListener('click', apresentaPlano);
                     }
                 }
             }, function (erro) {
         alert("Vish não consegui fazer a requisição, alguem chama um programador por favor? Aconteceu o erro:" + erro);
     }, "");
+
+    setTimeout(function () {
+        executaServico("GSLKJava", "buscaDados", "buscaTiposPagameno",
+                function (data) {
+                    for (var x = 0; x < data.length; x++) {
+                        var pagamentos =
+                                '  <div class="contrataPlano-paga exemplo2">'
+                                + '    <input type="radio" class="cursorPointer" id="p_' + data[x].CPAGAMENTO + '" name="tipo" value="' + data[x].NOME + '">'
+                                + '    <label for="p_' + data[x].CPAGAMENTO + '" class="cursorPointer"> ' + data[x].NOME + '</label>'
+                                + '</div>';
+                        document.querySelector(".divTiposPagamento").innerHTML += pagamentos;
+                    }
+
+                }, function (erro) {
+            alert("Vish1, algo de errado não está certo! Alguém chama um programador por favor?\r\nErro:" + erro, "Atenção!");
+        }, "");
+    }, 500);
+}
+
+function contatoFeedback() {
+    var nome = document.querySelector("#contato-nome").value;
+    var idade = document.querySelector("#contato-idade").value;
+    var email = document.querySelector("#contato-email").value;
+    var texto = document.querySelector("#contato-textarea").value;
+
+    executaServico("GSLKJava", "contato", "contato",
+            function (data) {
+                document.querySelector("#contato-nome").value = "";
+                document.querySelector("#contato-idade").value = "";
+                document.querySelector("#contato-email").value = "";
+                document.querySelector("#contato-textarea").value = "";
+                document.querySelector("#header_btnHome").click();
+                alert("Agradecemos pelo seu feedback!", "Sucesso!");
+            }, function (erro) {
+        alert("Vish, algo de errado não está certo! Alguém chama um programador por favor?\r\nErro: " + erro, "Atenção!");
+    }, "&NOME=" + nome + "&IDADE=" + idade + "&EMAIL=" + email + "&COMENTARIO=" + texto);
 }
 
 function contrataPlano(e) {
-    var codPromocao = document.querySelector(".contrataPlano-valor").id;
-    var cclifor = getCookie("cod");
-
-    if (cclifor !== "" || cclifor !== null) {
-        var parametros = "&CODUSER=" + cclifor + "&CODPROMOCAO=" + codPromocao + "&";
-        //projeto, classe, metodo, funcaoOK, funcaoErro, parametros
-        executaServico("GSLKJava", "contrataPlano", "contrataPlano",
-                function (data) {
-                    if (data[0].STATUS) {
-                        preencheDadosCliente(cclifor);
-                        document.querySelector(".tampaBackPromocao").classList.add("cont-inVisivel");
-                    } else {
-                        alert("Você tem informações não preenchidas para poder fazer a sua assinatura! \r\n Verifique nas configurações as informações que estão faltando...", "Atenção!");
-                    }
-                }, function (erro) {
-            alert("Vish não consegui fazer a requisição, alguem chama um programador por favor? \r\nErro:" + erro);
-        }, parametros);
-    } else {
-        document.querySelector("#header_btnEntrar").click();
-        alert("Você deve fazer o loguin antes de contratar um plano!");
+    var cplano = document.querySelector(".contrataPlano-valor").id.split("_")[0];
+    var cuser = document.querySelector(".contrataPlano-valor").id.split("_")[1];
+    var cpagamento;
+    for (var i = 0; i < document.getElementsByName("tipo").length; i++) {
+        if (document.getElementsByName("tipo")[i].checked) {
+            cpagamento = document.getElementsByName("tipo")[i].id.split("_")[1];
+        }
     }
+    var data = new Date();
+    var dataa = data.getDate() + "." + data.getMonth() + "." + data.getFullYear();
+    var parametros = "&CUSER=" + cuser + "&CPLANO=" + cplano + "&CPAGAMENTO=" + cplano + "&DATA=" + dataa;
+
+    alert(parametros);
+
+    if (cplano !== undefined && cplano !== "" && cplano !== 0) {
+        if (cpagamento !== undefined && cpagamento !== "" && cpagamento !== 0) {
+            if (cuser !== "" && cuser !== null) {
+                //projeto, classe, metodo, funcaoOK, funcaoErro, parametros
+                executaServico("GSLKJava", "contrataPlano", "contrataPlano",
+                        function (data) {
+                            if (data.STATUS) {
+                                preencheDadosCliente(cuser);
+                                document.querySelector(".tampaBackPromocao").classList.add("cont-inVisivel");
+                                alert(data.MSG, "Muito bem!");
+                            } else {
+                                alert("Você tem informações não preenchidas para poder fazer a sua assinatura! \r\n Verifique nas configurações as informações que estão faltando...", "Atenção!");
+                            }
+                        }, function (erro) {
+                    alert("Vish não consegui fazer a requisição, alguem chama um programador por favor? \r\nErro:" + erro);
+                }, parametros);
+            } else {
+                document.querySelector("#header_btnEntrar").click();
+                alert("Você deve fazer o loguin antes de contratar um plano!");
+            }
+        }
+    }
+}
+
+function editarOpcoes() {
+    document.querySelector("#nome").removeAttribute("disabled");
+    document.querySelector("#emaill").removeAttribute("disabled");
+    document.querySelector("#cep").removeAttribute("disabled");
+    document.querySelector("#endereco").removeAttribute("disabled");
+    document.querySelector("#bairro").removeAttribute("disabled");
+    document.querySelector("#cidade").removeAttribute("disabled");
+    document.querySelector("#telefone").removeAttribute("disabled");
+    document.querySelector("#celular").removeAttribute("disabled");
+    document.querySelector("#cpf").removeAttribute("disabled");
+    document.querySelector("#num").removeAttribute("disabled");
 }
 
 function salvarOpcoes() {
@@ -99,8 +170,8 @@ function salvarOpcoes() {
     document.querySelector("#telefone").setAttribute("disabled", true);
     document.querySelector("#celular").setAttribute("disabled", true);
     document.querySelector("#cpf").setAttribute("disabled", true);
-}
-function editarOpcoes() {
+    document.querySelector("#num").setAttribute("disabled", true);
+
     var nome = document.querySelector("#nome").value;
     var emaill = document.querySelector("#emaill").value;
     var cep = document.querySelector("#cep").value;
@@ -110,41 +181,49 @@ function editarOpcoes() {
     var telefone = document.querySelector("#telefone").value;
     var celular = document.querySelector("#celular").value;
     var cpf = document.querySelector("#cpf").value;
-
-    document.querySelector("#nome").removeAttribute("disabled");
-    document.querySelector("#emaill").removeAttribute("disabled");
-    document.querySelector("#cep").removeAttribute("disabled");
-    document.querySelector("#endereco").removeAttribute("disabled");
-    document.querySelector("#bairro").removeAttribute("disabled");
-    document.querySelector("#cidade").removeAttribute("disabled");
-    document.querySelector("#telefone").removeAttribute("disabled");
-    document.querySelector("#celular").removeAttribute("disabled");
-    document.querySelector("#cpf").removeAttribute("disabled");
+    var cod = document.querySelector("#cclifor").value;
+    var num = document.querySelector("#num").value;
 
     var parametros = "&NOME=" + nome + "&EMAIL=" + emaill + "&CEP=" + cep + "&ENDERECO=" + endereco + "&BAIRRO=" + bairro
-            + "&CIDADE=" + cidade + "&TELEFONE=" + telefone + "&CELULAR=" + celular + "&CPF=" + cpf;
+            + "&CIDADE=" + cidade + "&TELEFONE=" + telefone + "&CELULAR=" + celular + "&CPF=" + cpf + "&COD=" + cod
+            + "&NUMERO=" + num;
     //projeto, classe, metodo, funcaoOK, funcaoErro, parametros
-    executaServico("GSLKJava", "contrataPlano", "contrataPlano",
+    executaServico("GSLKJava", "salvarDados", "salvarDados",
             function (data) {
-                if (data[0].STATUS) {
-                    alert("Registro inserido com sucesso!", "Sucesso");
-                } else {
-                    alert("Algo deu errado!", "Atenção!");
-                }
+                alert(data, "Atenção!");
             }, function (erro) {
         alert("Vish não consegui salvar, alguem chama um programador por favor?\r\nErro:" + erro, "Atenção!");
     }, parametros);
 }
+
 function editarSenhaOpcoes() {
     document.querySelector("#emaill").removeAttribute("disabled");
     document.querySelector("#senhaa").removeAttribute("disabled");
     document.querySelector("#confSenha").removeAttribute("disabled");
 }
+
 function salvarSenhaOpcoes() {
     document.querySelector("#emaill").setAttribute("disabled", true);
     document.querySelector("#senhaa").setAttribute("disabled", true);
     document.querySelector("#confSenha").setAttribute("disabled", true);
+
+    var email = document.querySelector("#emaill").value;
+    var senha = document.querySelector("#senhaa").value;
+    var confsenha = document.querySelector("#confSenha").value;
+    var cclifor = document.querySelector("#cclifor").value;
+
+    executaServico("GSLKJava", "contato", "alteraSenha",
+            function (data) {
+                if (data) {
+                    alert("Sua senha foi redefinida!", "Sucesso");
+                } else {
+                    alert("Os campos de senha e confirmação da senha devem ser iguais!", "Atenção");
+                }
+            }, function (erro) {
+        alert("Vish não consegui salvar, alguem chama um programador por favor?\r\nErro: \r\n" + erro, "Atenção!");
+    }, "&EMAIL=" + email + "&SENHA=" + senha + "&CONFSENHA=" + confsenha + "&COD=" + cclifor);
 }
+
 function mudaAbaOpcoesFatu() {
     document.querySelector("#opcoes_fatura").classList.remove("cont-inVisivel");
     document.querySelector("#opcoes_config").classList.add("cont-inVisivel");
@@ -171,7 +250,7 @@ function montaPlanos(data) {
                 + '        <p class="main-planos-mid-p1">' + data[l].DESC + '</p><br>'
                 + '        <p class="main-planos-mid-p2">Quantidade de pessoas que o plano comporta: ' + data[l].QTDEPESSU + '</p>'
                 + '    </div>'
-                + '    <div class="plano_' + data[l].COD + '" id="main-planos-button"><span>Assine já</span></div>'
+                + '    <div class="plano_' + data[l].COD + '" id="main-planos-button"><span class="plano_' + data[l].COD + '">Assine já</span></div>'
                 + '</div>';
         document.querySelector("#main-planos").innerHTML += linhas;
         document.querySelector(".plano_" + data[l].COD).addEventListener("click", apresentaPlano);
@@ -182,25 +261,6 @@ function apresentaPlano(e) {
     var codPlan = e.target.classList.toString().split("_")[1];
 
     //projeto, classe, metodo, funcaoOK, funcaoErro, parametros
-    executaServico("GSLKJava", "buscaDados", "buscaTiposPagameno",
-            function (data) {
-                for (var i = 0; i < data.length; i++) {
-                    var paga = data.PAGAMENTO;
-                    i++;
-                    var nome = data.NOME;
-                    var pagamentos =
-                            '  <div class="contrataPlano-paga exemplo2">'
-                            + '    <input type="radio" class="cursorPointer" id="p_' + paga + '" name="tipo" value="' + nome + '">'
-                            + '    <label for="p_' + paga + '" class="cursorPointer"> ' + nome + '</label>'
-                            + '</div>';
-                    document.querySelector(".divTiposPagamento").innerHTML += pagamentos;
-                }
-                document.querySelector("#tampaBackPromocao").classList.remove("cont-inVisivel");
-            }, function (erro) {
-        alert("Vish, algo de errado não está certo! Alguém chama um programador por favor?\r\nErro:" + erro, "Atenção!");
-    }, "");
-
-    //projeto, classe, metodo, funcaoOK, funcaoErro, parametros
     executaServico("GSLKJava", "buscaDados", "buscaPromocao",
             function (data) {
                 document.querySelector(".contrataPlano-tituloPlano").innerHTML = data.NOME;
@@ -208,9 +268,9 @@ function apresentaPlano(e) {
                         + '<p class="main-planos-mid-p2">Quantidade de pessoas que o plano comporta: ' + data.QTDEPESSU + '</p>';
                 document.querySelector(".tampaBackPromocao").classList.remove("cont-inVisivel");
                 document.querySelector(".contrataPlano-valor").innerHTML = "Valor do plano: R$" + data.VALOR;
-                document.querySelector(".contrataPlano-valor").id = data.COD;
+                document.querySelector(".contrataPlano-valor").id = data.COD + "_" + getCookie("cod");
             }, function (erro) {
-        alert("Vish, algo de errado não está certo! Alguém chama um programador por favor?\r\nErro:" + erro, "Atenção!");
+        alert("Vish2, algo de errado não está certo! Alguém chama um programador por favor?\r\nErro:" + erro, "Atenção!");
     }, "&CODPLANO=" + codPlan + "&");
 }
 
@@ -321,6 +381,7 @@ function preencheDadosCliente(cod) {
             document.querySelector("#telefone").value = jData.FONE;
             document.querySelector("#celular").value = jData.CELULAR;
             document.querySelector("#cpf").value = jData.CPF;
+            document.querySelector("#num").value = jData.NUMERO;
 
             if (jData.PLANO) {
                 document.querySelector("#ccontrato").value = jData.CCONTRATO;
@@ -333,8 +394,8 @@ function preencheDadosCliente(cod) {
             }
         }
     }, function (erro) {
-        alert(erro);
-    }, "&COD=" + cod + "&");
+        alert("dados cli: " + erro);
+    }, "&COD=" + cod);
 }
 
 function fazerCadastro() {

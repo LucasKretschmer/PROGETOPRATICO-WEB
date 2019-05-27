@@ -21,6 +21,9 @@ a, p, h1, h2, h3, ul, li{
     text-decoration: none;
     list-style: none;
 }
+.transition3s{
+    transition: .3s;
+}
 .nome-cliente{
     float: right;
     margin: 0.2% 2% 0% 1%;
@@ -46,7 +49,7 @@ a, p, h1, h2, h3, ul, li{
 }
 .header-mid-menu-ul-fixo{
     display: inline-block;
-    width: 30%;
+    width: 34%;
     color: whitesmoke;
 }
 .header-mid-fixo-visivel{top: 0;}
@@ -258,12 +261,6 @@ header{
     width: 100%;
     text-align: right;
 }
-.header-mid-menu-li-fixo{
-    margin-left: 5%;
-    padding: 1.2% 3% 1.1% 3%;
-    font-size: 1.1em;
-    margin-bottom: 8px;
-}
 .header-mid-menu-li-usuario a{
     color:white;
 }
@@ -320,6 +317,12 @@ header{
     align-items: center;
     display: inline-grid;
     padding-top: 2em;
+}
+.header-mid-menu-li-fixo{
+    padding: 1.2% 3% 1.1% 3%;
+    font-size: 1.1em;
+    margin: 0% 2% 1% 2%;
+    height: 2em;
 }
 /*  main  */
 #main-planos{
@@ -582,6 +585,7 @@ footer{
     padding: 1% 4% 0.3% 3%;
     overflow: hidden;
     border-top: 1px solid cadetblue;
+    margin-top: -4px;
 }
 .footer-logo{
     width: 19%;
@@ -868,6 +872,14 @@ th {
 .confSenha1{
     width: 98%;
 }
+.comp{
+    width: 45.5%;
+}
+.comp1{width: 97%;}
+.num{
+
+}
+
 .ccontrato1{width: 97%;}
 .dataContrato1{width: 97%;}
 .valor1{width: 97%;}
