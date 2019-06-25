@@ -47,10 +47,9 @@ function init() {
                     document.querySelectorAll("#header_btnEntrar")[1].classList.add("user-inVisivel");
                     logar(jData.CCLIFOR, nomeUser);
                     preencheDadosCliente(cod);
+//                    retornaDuplicatas(cod);
                 }
-            }, function (erro) {
-                alert(erro);
-            }, "&COD=" + cod + "&");
+            }, null, "&COD=" + cod + "&");
         }
     }
 
@@ -68,7 +67,7 @@ function init() {
                     }
                 }
             }, function (erro) {
-        alert("Vish não consegui fazer a requisição, alguem chama um programador por favor? Aconteceu o erro:" + erro);
+        alert("Erro na requisição:" + erro);
     }, "");
 
     setTimeout(function () {
@@ -84,7 +83,7 @@ function init() {
                     }
 
                 }, function (erro) {
-            alert("Vish1, algo de errado não está certo! Alguém chama um programador por favor?\r\nErro:" + erro, "Atenção!");
+            alert("Erro na requisição:" + erro, "Atenção!");
         }, "");
     }, 500);
 }
@@ -104,7 +103,7 @@ function contatoFeedback() {
                 document.querySelector("#header_btnHome").click();
                 alert("Agradecemos pelo seu feedback!", "Sucesso!");
             }, function (erro) {
-        alert("Vish, algo de errado não está certo! Alguém chama um programador por favor?\r\nErro: " + erro, "Atenção!");
+        alert("Erro na requisição: " + erro, "Atenção!");
     }, "&NOME=" + nome + "&IDADE=" + idade + "&EMAIL=" + email + "&COMENTARIO=" + texto);
 }
 
@@ -121,8 +120,6 @@ function contrataPlano(e) {
     var dataa = data.getDate() + "." + data.getMonth() + "." + data.getFullYear();
     var parametros = "&CUSER=" + cuser + "&CPLANO=" + cplano + "&CPAGAMENTO=" + cplano + "&DATA=" + dataa;
 
-    alert(parametros);
-
     if (cplano !== undefined && cplano !== "" && cplano !== 0) {
         if (cpagamento !== undefined && cpagamento !== "" && cpagamento !== 0) {
             if (cuser !== "" && cuser !== null) {
@@ -137,8 +134,11 @@ function contrataPlano(e) {
                                 alert("Você tem informações não preenchidas para poder fazer a sua assinatura! \r\n Verifique nas configurações as informações que estão faltando...", "Atenção!");
                             }
                         }, function (erro) {
-                    alert("Vish não consegui fazer a requisição, alguem chama um programador por favor? \r\nErro:" + erro);
+                    alert("Erro na requisição:" + erro);
                 }, parametros);
+                alert("Sua assinatura foi concluída com sucesso!\r\nConfira seu email com as informações do plano contratado...", "Muito bem!");
+                preencheDadosCliente(cuser);
+                document.querySelector(".tampaBackPromocao").classList.add("cont-inVisivel");
             } else {
                 document.querySelector("#header_btnEntrar").click();
                 alert("Você deve fazer o loguin antes de contratar um plano!");
@@ -192,7 +192,7 @@ function salvarOpcoes() {
             function (data) {
                 alert(data, "Atenção!");
             }, function (erro) {
-        alert("Vish não consegui salvar, alguem chama um programador por favor?\r\nErro:" + erro, "Atenção!");
+        alert("Erro na requisição:" + erro, "Atenção!");
     }, parametros);
 }
 
@@ -220,7 +220,7 @@ function salvarSenhaOpcoes() {
                     alert("Os campos de senha e confirmação da senha devem ser iguais!", "Atenção");
                 }
             }, function (erro) {
-        alert("Vish não consegui salvar, alguem chama um programador por favor?\r\nErro: \r\n" + erro, "Atenção!");
+        alert("Erro na requisição: \r\n" + erro, "Atenção!");
     }, "&EMAIL=" + email + "&SENHA=" + senha + "&CONFSENHA=" + confsenha + "&COD=" + cclifor);
 }
 
@@ -270,7 +270,7 @@ function apresentaPlano(e) {
                 document.querySelector(".contrataPlano-valor").innerHTML = "Valor do plano: R$" + data.VALOR;
                 document.querySelector(".contrataPlano-valor").id = data.COD + "_" + getCookie("cod");
             }, function (erro) {
-        alert("Vish2, algo de errado não está certo! Alguém chama um programador por favor?\r\nErro:" + erro, "Atenção!");
+        alert("Erro na requisição:" + erro, "Atenção!");
     }, "&CODPLANO=" + codPlan + "&");
 }
 
@@ -285,6 +285,7 @@ window.onscroll = function () {
 function executaServico(projeto, classe, metodo, funcaoOK, funcaoErro, parametros) {
     var http = new XMLHttpRequest();
     http.open('POST', 'http://portal.tecnicon.com.br:7078/TecniconPCHttp/ConexaoHttp?p=evento=ERPMetodos|sessao=|empresa=|filial=|local=|parametro=' +
+//    http.open('POST', 'http://192.168.1.196:7078/TecniconPCHttp/ConexaoHttp?p=evento=ERPMetodos|sessao=|empresa=|filial=|local=|parametro=' +
             'projeto=' + projeto + '|classe=' + classe + '|metodo=' + metodo + '|recurso=metadados' + parametros, true);
     http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     http.addEventListener('load', function () {
@@ -356,12 +357,23 @@ function fazerLogin() {
             document.querySelectorAll("#header_btnEntrar")[1].classList.add("user-inVisivel");
             logar(jData.CCLIFOR, nomeUser, email);
             preencheDadosCliente(jData.CCLIFOR);
+//            retornaDuplicatas(jData.CCLIFOR);
         } else {
             alert(jData.MSG, "Atenção!");
         }
     }, function (erro) {
         alert(erro);
     }, param);
+}
+
+function retornaDuplicatas(cclifor) {
+    executaServico("GSLKJava", "boletos", "retornaDuplicatas",
+            function (data) {
+                console.log("" + data);
+            }, function (erro) {
+        alert("Erro na requisição:" + erro);
+    }, "&CCLIFOR=" + cclifor);
+
 }
 
 function preencheDadosCliente(cod) {
@@ -405,7 +417,7 @@ function fazerCadastro() {
     var confSenha = document.querySelector("#cadastrar-confsenha").value;
     var parametro = "&NOME=" + nome + "&EMAIL=" + email + "&SENHA=" + senha + "&CONFSENHA=" + confSenha;
     // projeto, classe, metodo, funcaoOK, funcaoErro, parametros
-    executaServico("GSLKJava", "login", "fazerCadastro", function (data) {
+    executaServico("GSLKJava", "contrataPlano", "user", function (data) {
         var jData = data;
         if (jData.STATUS) {
             var arrNome = jData.NOME.split(" ");
@@ -422,7 +434,9 @@ function fazerCadastro() {
             document.querySelectorAll("#btn_usuario_conta")[1].classList.remove("user-inVisivel");
             document.querySelectorAll("#header_btnEntrar")[0].classList.add("user-inVisivel");
             document.querySelectorAll("#header_btnEntrar")[1].classList.add("user-inVisivel");
-            logar(jData.CCLIFOR, nomeUser, email);
+            logar(jData.COD, nomeUser, email);
+            preencheDadosCliente(jData.COD);
+//            retornaDuplicatas(jData.COD);
         } else {
             alert(data);
         }

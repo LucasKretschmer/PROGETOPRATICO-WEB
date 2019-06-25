@@ -549,7 +549,7 @@ header{
     float: left;
 }
 .main-apresentacao-container-texto h1{
-    margin: 4% 0% 1% 23%;
+    margin: 4% 0% 1% 14%;
     display: inline-block;
     font-size: 2em;
 }
@@ -569,7 +569,7 @@ header{
     box-shadow: 2px 2px 11px 2px black;
 }
 .main-apresentacao-container-texto-dir h1{
-    margin: 4% 0% 1% 27%;
+    margin: 4% 0% 1% 16%;
     display: inline-block;
     font-size: 2em;
 }
