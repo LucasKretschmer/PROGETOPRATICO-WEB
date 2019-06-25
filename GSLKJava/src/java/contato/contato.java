@@ -109,6 +109,8 @@ public class contato {
             cds.fieldByName("CONFSENHA").asString(vs.getParameter("CONFSENHA"));
             cds.post();
 
+            envioEmail(vs, "Recuperação de Senha", "Sua senha foi alterada!", vs.getParameter("EMAIL"), "Senha redefinida com Sucesso! \n Verifique seu E-Mail!");
+
             return true;
         }
         return false;

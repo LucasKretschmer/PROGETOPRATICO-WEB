@@ -120,9 +120,6 @@ public class login {
                 return objeto.toString();
             }
         } else {
-            if (true) {
-                throw new ExcecaoMsg(vs, "asdasdasdsadsa");
-            }
             throw new ExcecaoMsg(vs, "As senhas devem ser iguais, por favor digite novamente!");
         }
     }
