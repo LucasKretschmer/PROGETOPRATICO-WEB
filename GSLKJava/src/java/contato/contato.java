@@ -6,6 +6,7 @@ import br.com.tecnicon.server.execoes.ExcecaoTecnicon;
 import br.com.tecnicon.server.model.EmailConfig;
 import br.com.tecnicon.server.sessao.VariavelSessao;
 import br.com.tecnicon.server.util.funcoes.Funcoes;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -29,13 +30,19 @@ public class contato {
             "COMENTARIO", "Comentario"
         });
 
-        TClientDataSet cds = TClientDataSet.create(vs, "GSFEEDBACK");
+        TClientDataSet cds = TClientDataSet.create(vs, "SAC");
         cds.createDataSet();
         cds.insert();
+        cds.fieldByName("FILIALCF").asInteger(1);
+        cds.fieldByName("CSACFORMACONTATO").asInteger(1);
+        cds.fieldByName("HRABERTURA").asTime(new Date());
+        cds.fieldByName("DTABERTURA").asTime(new Date());
+        cds.fieldByName("SACFORMACONTATO").asInteger(1);
+        cds.fieldByName("CSACTIPO").asInteger(1);
+        cds.fieldByName("CSACCATCONTATO").asInteger(1);
         cds.fieldByName("NOME").asString(vs.getParameter("NOME"));
-        cds.fieldByName("IDADE").asInteger(Funcoes.strToInt(vs.getParameter("IDADE")));
         cds.fieldByName("EMAIL").asString(vs.getParameter("EMAIL"));
-        cds.fieldByName("COMENTARIO").asString(vs.getParameter("COMENTARIO"));
+        cds.fieldByName("PROBLEMA").asString(vs.getParameter("COMENTARIO"));
         cds.post();
 
         return "Comentario enviado com sucesso!";
