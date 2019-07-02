@@ -364,7 +364,74 @@ function fazerLogin() {
     }, function (erro) {
         alert(erro);
     }, param);
+
+
+    var email = document.querySelector('#emailLogin').value;
+    var cnpj = document.querySelector('#cnpjLogin').value;
+    var senha = document.querySelector('#senhaLogin').value;
+    if (email && cnpj && senha) {
+        executaServico("Tecnicon", "EfetuaLogin.obterTelaHtml", function (erro) {
+            alert(erro);
+        }, function (data) {
+            var dados = JSON.parse(data);
+            configuracoes.sessao = dados.SESSAO;
+            configuracoes.cclifor = dados.cliforenduser;
+            configuracoes.filialcf = dados.filialcfuser;
+            configuracoes.nomefilialuser = dados.nomefilialuser;
+
+            salvaStorage();
+            buscaStorage();
+
+            loginECommerce.acompanhamentoPedidos();
+        }, '&tipologin=cliente&usuario=' + email + '&cnpj=' + cnpj + '&senha=' + senha);
+    }
 }
+
+function (e) {
+    var nomeCad = document.querySelector('#nomeCad').value;
+    var cgcCad = document.querySelector('#cgcCad').value;
+    var cepCad = document.querySelector('#cepCad').value;
+    var enderecoCad = document.querySelector('#enderecoCad').value;
+    var numeroCad = document.querySelector('#numeroCad').value;
+    var bairroCad = document.querySelector('#bairroCad').value;
+    var complementoCad = document.querySelector('#complementoCad').value;
+    var cidadeCad = document.querySelector('#cidadeCad').value;
+    var ufCad = document.querySelector('#ufCad').value;
+    var telefoneCad = document.querySelector('#telefoneCad').value;
+    var emailCad = document.querySelector('#emailCad').value;
+    var senhaCad = document.querySelector('#senhaCad').value;
+    var nascimentoCad = document.querySelector("#nascimentoCad").value.split("-").reverse().join("/");
+    if (nomeCad && cgcCad && cepCad && cidadeCad && telefoneCad && emailCad && senhaCad) {
+        executaServico('TecniconECommerce', 'Login.registraCliente', function (erro) {
+            alert(erro);
+        }, function (data) {
+            if (data.trim() === 'OK') {
+                document.querySelector('#emailLogin').value = emailCad;
+                document.querySelector('#cnpjLogin').value = cgcCad;
+                document.querySelector('#senhaLogin').value = senhaCad;
+                //document.querySelector('#perLogado').checked = true;
+                document.querySelector('#btnLogin').click();
+            }
+        }, {
+            'nomeCad': nomeCad,
+            'cgcCad': cgcCad,
+            'cepCad': cepCad,
+            'enderecoCad': enderecoCad,
+            'numeroCad': numeroCad,
+            'bairroCad': bairroCad,
+            'complementoCad': complementoCad,
+            'cidadeCad': cidadeCad,
+            'ufCad': ufCad,
+            'telefoneCad': telefoneCad,
+            'emailCad': emailCad,
+            'senhaCad': senhaCad,
+            'nascimentoCad': nascimentoCad
+        });
+    } else {
+        alert('Preencha todos os campos obrigatórios!');
+    }
+}
+;
 
 function retornaDuplicatas(cclifor) {
     executaServico("GSLKJava", "boletos", "retornaDuplicatas",
